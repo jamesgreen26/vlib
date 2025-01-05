@@ -3,7 +3,7 @@
   "id": "${mod_id}",
   "version": "${version}",
   "name": "${mod_name}",
-  "description": "{$mod_description}",
+  "description": "$mod_description",
   "authors": [
     "${mod_author}"
   ],
@@ -12,7 +12,7 @@
     "sources": "${sources}"
   },
   "license": "${mod_license}",
-  "icon": "assets/${mod_id}/icon.png",
+  "icon": "assets/vlib/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -25,12 +25,6 @@
       {
         "adapter": "kotlin",
         "value": "g_mungus.vlib.fabric.VLibFabric${'$'}Client"
-      }
-    ],
-    "preLaunch": [
-      {
-        "adapter": "kotlin",
-        "value": "g_mungus.vlib.fabric.ValkyrienPreLaunch"
       }
     ]
   },
