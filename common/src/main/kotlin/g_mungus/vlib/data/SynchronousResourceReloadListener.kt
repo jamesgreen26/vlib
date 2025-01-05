@@ -20,6 +20,9 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
 
     override fun onResourceManagerReload(resourceManager: ResourceManager) {
         LOGGER.info("VLib scanning for data")
+
+        StructureManager.resetModifiedStructures()
+
         val predicate = Predicate<ResourceLocation> {resourceLocation -> resourceLocation.path.equals("structure-settings/structures.json")}
         resourceManager.listResources("structure-settings", predicate).forEach { (resourceLocation, resource) ->
 
@@ -31,13 +34,13 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
             }
 
             if (structures != null) {
-                StructureManager.setStructuresToAssemble(structures)
+                StructureManager.addModifiedStructures(structures)
             } else {
                 LOGGER.warn("Skipping resource at $resourceLocation because it could not be parsed.")
             }
         }
 
-        LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getStructuresToAssemble().toString())
+        LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString())
     }
 
     private fun readJsonWithJackson(inputStream: InputStream): StructureDirectories? {

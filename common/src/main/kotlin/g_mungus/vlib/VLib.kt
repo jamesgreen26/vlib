@@ -19,13 +19,13 @@ object VLib {
     const val MOD_ID = "vlib"
     val LOGGER: Logger = LoggerFactory.getLogger("VLib")
 
-
     val TESTING_STICK = TestingStickItem(Item.Properties().rarity(Rarity.EPIC))
 
 
     @JvmStatic
     fun init() {
         LOGGER.info("VLib init")
+
         // Register data loader
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(SynchronousResourceReloadListener)
 
@@ -38,10 +38,7 @@ object VLib {
 
 
     private fun registerItem(name: String, item: Item) {
-        Registry.register(
-            BuiltInRegistries.ITEM,
-            ResourceLocation(MOD_ID, name),
-            item
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation(MOD_ID, name), item
         )
     }
 }

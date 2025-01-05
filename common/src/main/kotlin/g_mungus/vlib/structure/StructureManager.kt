@@ -6,11 +6,15 @@ import g_mungus.vlib.data.StructureSettings
 object StructureManager {
     private var modifiedStructures = StructureDirectories(directories = listOf<StructureSettings>())
 
-    fun setStructuresToAssemble (modifiedStructures: StructureDirectories) {
-        this.modifiedStructures = modifiedStructures
+    fun addModifiedStructures (modifiedStructures: StructureDirectories) {
+        TODO()
     }
 
-    fun getStructuresToAssemble(): StructureDirectories {
+    fun resetModifiedStructures () {
+        modifiedStructures = StructureDirectories(directories = listOf<StructureSettings>())
+    }
+
+    fun getModifiedStructures(): StructureDirectories {
         return this.modifiedStructures
     }
 }

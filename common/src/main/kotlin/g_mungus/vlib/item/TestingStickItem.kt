@@ -26,18 +26,4 @@ class TestingStickItem(properties: Properties) : Item(properties) {
         return super.useOn(context)
     }
 
-//    override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
-//        if (level is ServerLevel) {
-//            val blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY)
-//            if (level.isBlockInShipyard(blockHitResult.blockPos)) {
-//                saveShipToTemplate("", level, blockHitResult.blockPos)
-//                println("used successfully")
-//                return InteractionResultHolder.success(player.getItemInHand(usedHand))
-//            }
-//        }
-//
-//
-//        println("ship not found")
-//        return super.use(level, player, usedHand)
-//    }
 }
