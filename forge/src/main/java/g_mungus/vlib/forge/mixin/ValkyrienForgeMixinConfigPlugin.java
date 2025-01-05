@@ -1,4 +1,4 @@
-package io.github.techtastic.vs_addon_template.forge.mixin;
+package g_mungus.vlib.forge.mixin;
 
 import java.util.List;
 import java.util.Set;

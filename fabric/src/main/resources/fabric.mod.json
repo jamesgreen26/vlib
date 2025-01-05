@@ -18,19 +18,19 @@
     "main": [
       {
         "adapter": "kotlin",
-        "value": "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric"
+        "value": "g_mungus.vlib.fabric.VLibFabric"
       }
     ],
     "client": [
       {
         "adapter": "kotlin",
-        "value": "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric${'$'}Client"
+        "value": "g_mungus.vlib.fabric.VLibFabric${'$'}Client"
       }
     ],
     "preLaunch": [
       {
         "adapter": "kotlin",
-        "value": "io.github.techtastic.vs_addon_template.fabric.ValkyrienPreLaunch"
+        "value": "g_mungus.vlib.fabric.ValkyrienPreLaunch"
       }
     ]
   },

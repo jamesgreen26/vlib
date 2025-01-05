@@ -1,15 +1,15 @@
-package io.github.techtastic.vs_addon_template.forge
+package g_mungus.vlib.forge
 
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import io.github.techtastic.vs_addon_template.VSAddonTemplateMod
-import io.github.techtastic.vs_addon_template.VSAddonTemplateMod.init
-import io.github.techtastic.vs_addon_template.VSAddonTemplateMod.initClient
+import g_mungus.vlib.VLib
+import g_mungus.vlib.VLib.init
+import g_mungus.vlib.VLib.initClient
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
-@Mod(VSAddonTemplateMod.MOD_ID)
-class VSAddonTemplateModForge {
+@Mod(VLib.MOD_ID)
+class VLibForge {
     init {
         MOD_BUS.addListener { event: FMLClientSetupEvent? ->
             clientSetup(

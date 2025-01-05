@@ -1,4 +1,4 @@
-package io.github.techtastic.vs_addon_template.fabric
+package g_mungus.vlib.fabric
 
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint
 
