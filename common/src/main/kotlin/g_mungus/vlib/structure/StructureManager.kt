@@ -1,20 +1,21 @@
 package g_mungus.vlib.structure
 
-import g_mungus.vlib.data.StructureDirectories
+import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
 
 object StructureManager {
-    private var modifiedStructures = StructureDirectories(directories = listOf<StructureSettings>())
+    @Volatile
+    private var modifiedStructures = mapOf<String, StructureSettings>()
 
-    fun addModifiedStructures (modifiedStructures: StructureDirectories) {
-        TODO()
+    fun addModifiedStructures (modifiedStructures: Map<String, StructureSettings>) {
+        this.modifiedStructures = this.modifiedStructures.toMutableMap() + modifiedStructures
     }
 
     fun resetModifiedStructures () {
-        modifiedStructures = StructureDirectories(directories = listOf<StructureSettings>())
+        modifiedStructures = mapOf()
     }
 
-    fun getModifiedStructures(): StructureDirectories {
-        return this.modifiedStructures
+    fun getModifiedStructures(): Map<String, StructureSettings> {
+        return this.modifiedStructures.toMap()
     }
 }

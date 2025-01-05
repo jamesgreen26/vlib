@@ -43,7 +43,7 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
         LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString())
     }
 
-    private fun readJsonWithJackson(inputStream: InputStream): StructureDirectories? {
+    private fun readJsonWithJackson(inputStream: InputStream): HashMap<String, StructureSettings>? {
         val objectMapper = jacksonObjectMapper()
         return inputStream.use {
             try {

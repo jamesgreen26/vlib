@@ -1,7 +1,7 @@
 {
-  "directories": [
-    {
-      "location": "vlib/test"
+  "vlib/test": {
+    "placement": {
+      "rename": "false"
     }
-  ]
+  }
 }
