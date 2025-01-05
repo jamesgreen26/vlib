@@ -7,11 +7,11 @@ object StructureManager {
     @Volatile
     private var modifiedStructures = mapOf<String, StructureSettings>()
 
-    fun addModifiedStructures (modifiedStructures: Map<String, StructureSettings>) {
+    fun addModifiedStructures(modifiedStructures: Map<String, StructureSettings>) {
         this.modifiedStructures = this.modifiedStructures.toMutableMap() + modifiedStructures
     }
 
-    fun resetModifiedStructures () {
+    fun resetModifiedStructures() {
         modifiedStructures = mapOf()
     }
 
