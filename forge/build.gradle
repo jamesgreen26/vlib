@@ -62,6 +62,9 @@ dependencies {
 
     // Kotlin for Forge
     implementation "thedarkcolour:kotlinforforge:$forge_kotlin_version"
+
+    // Fabric API
+    modImplementation "dev.su5ed.sinytra.fabric-api:fabric-api:${rootProject.forge_fabric_api_version}"
 }
 
 processResources {
