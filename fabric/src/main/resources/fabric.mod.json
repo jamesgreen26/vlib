@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "{$mod_description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "homepage": "${homepage}",
+    "sources": "${sources}"
+  },
+  "license": "${mod_license}",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric${'$'}Client"
+      }
+    ],
+    "preLaunch": [
+      {
+        "adapter": "kotlin",
+        "value": "io.github.techtastic.vs_addon_template.fabric.ValkyrienPreLaunch"
+      }
+    ]
+  },
+  "mixins": [
+    "vs_addon_template-common.mixins.json",
+    "vs_addon_template.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_version}",
+    "valkyrienskies": ">=${vs2_version}",
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "architectury": ">=${architectury_version}"
+  }
+}
