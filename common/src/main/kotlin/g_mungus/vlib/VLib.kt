@@ -19,17 +19,18 @@ object VLib {
     const val MOD_ID = "vlib"
     val LOGGER: Logger = LoggerFactory.getLogger("VLib")
 
-    val TESTING_STICK = TestingStickItem(Item.Properties().rarity(Rarity.EPIC))
-
 
     @JvmStatic
-    fun init() {
+    fun init(isFabric: Boolean) {
         LOGGER.info("VLib init")
 
         // Register data loader
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(SynchronousResourceReloadListener)
 
-        registerItem("testing_stick", TESTING_STICK)
+
+        if(isFabric) {
+            registerItem("testing_stick", TestingStickItem(Item.Properties().rarity(Rarity.EPIC)))
+        }
     }
 
     @JvmStatic

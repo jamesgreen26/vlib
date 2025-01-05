@@ -16,7 +16,7 @@ class VLibForge {
                 event
             )
         }
-        init()
+        init(false)
     }
 
     private fun clientSetup(event: FMLClientSetupEvent?) {

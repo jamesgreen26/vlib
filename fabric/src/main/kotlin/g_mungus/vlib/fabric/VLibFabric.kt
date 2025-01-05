@@ -13,7 +13,7 @@ object VLibFabric: ModInitializer {
         // force VS2 to load before eureka
         ValkyrienSkiesModFabric().onInitialize()
 
-        init()
+        init(true)
     }
 
     @Environment(EnvType.CLIENT)
