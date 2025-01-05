@@ -41,3 +41,8 @@ mandatory = true
 versionRange = "[${architectury_version},)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.'${mod_id}']]
+modId = "fabric_api"
+mandatory = true
+versionRange = "[${forge_fabric_api_version},)"
