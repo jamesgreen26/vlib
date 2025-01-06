@@ -89,7 +89,7 @@ private fun getStructureTemplate (structurePath: String, level: ServerLevel, shi
 private fun getMin(aabb: AABBic?): BlockPos {
 
     if (aabb != null) {
-        return BlockPos(aabb.minX(), aabb.minY(), aabb.minZ())
+        return BlockPos(aabb.minX()-1, aabb.minY()-1, aabb.minZ()-1)
     } else {
         throw Exception("Why doesn't the ship have a shipyard AABB?")
     }
@@ -97,7 +97,7 @@ private fun getMin(aabb: AABBic?): BlockPos {
 
 private fun getSize(aabb: AABBic?): Vec3i {
     if (aabb != null) {
-        return Vec3i(aabb.maxX() - aabb.minX(), aabb.maxY() - aabb.minY(), aabb.maxZ() - aabb.minZ())
+        return Vec3i(aabb.maxX() - aabb.minX() + 2, aabb.maxY() - aabb.minY() + 2, aabb.maxZ() - aabb.minZ() + 2)
     } else {
         throw Exception("Why doesn't the ship have a shipyard AABB?")
     }
