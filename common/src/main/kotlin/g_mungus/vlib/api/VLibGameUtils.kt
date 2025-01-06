@@ -122,7 +122,11 @@ fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: Resou
         structureTemplateManager = structureTemplateManager
     )
 
-    val structureSettings = StructureSettings(true, "")
+    val structureSettings = StructureSettings(
+        folder = "",
+        rename = true,
+        static = false
+    )
 
     val targetLevel = serverLevel.server.getLevel(targetDimension)?: return
 
