@@ -37,7 +37,7 @@ public abstract class StructureTemplateManagerMixin implements CanRemoveTemplate
 
         if (template.isPresent() && !template.get().getAuthor().equals(StructureManager.DIRTY) && StructureManager.INSTANCE.getModifiedStructures().containsKey(id.getNamespace())) {
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
-            if (structureSettings.getPlacementSettings() != null && id.getPath().startsWith(structureSettings.getPlacementSettings().getAutoAssemblyFolder())) {
+            if (id.getPath().startsWith(structureSettings.getFolder())) {
                 template.get().setAuthor(StructureManager.READY);
             }
         }

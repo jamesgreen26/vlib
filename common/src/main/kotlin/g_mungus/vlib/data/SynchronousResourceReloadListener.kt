@@ -15,7 +15,7 @@ import java.util.function.Predicate
 
 object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListener {
     override fun getFabricId(): ResourceLocation {
-        return ResourceLocation("vlib", "auto-assemble")
+        return ResourceLocation("vlib", "")
     }
 
     override fun onResourceManagerReload(resourceManager: ResourceManager) {
@@ -23,7 +23,7 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
 
         StructureManager.resetModifiedStructures()
 
-        val predicate = Predicate<ResourceLocation> {resourceLocation -> resourceLocation.path.equals("structure-settings/structures.json")}
+        val predicate = Predicate<ResourceLocation> {true}
         resourceManager.listResources("structure-settings", predicate).forEach { (resourceLocation, resource) ->
 
             val structures = try {
@@ -34,7 +34,7 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
             }
 
             if (structures != null) {
-                StructureManager.addModifiedStructures(structures)
+                StructureManager.addModifiedStructures(resourceLocation.namespace, structures)
             } else {
                 LOGGER.warn("Skipping resource at $resourceLocation because it could not be parsed.")
             }
@@ -43,11 +43,11 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
         LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString())
     }
 
-    private fun readJsonWithJackson(inputStream: InputStream): HashMap<String, StructureSettings>? {
+    private fun readJsonWithJackson(inputStream: InputStream): StructureSettings? {
         val objectMapper = jacksonObjectMapper()
         return inputStream.use {
             try {
-                objectMapper.readValue(it)
+                objectMapper.readValue(it, StructureSettings::class.java)
             } catch (e: MismatchedInputException) {
                 null
             }

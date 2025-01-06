@@ -25,8 +25,10 @@ object StructureManager {
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
 
-    fun addModifiedStructures(modifiedStructures: Map<String, StructureSettings>) {
-        this.modifiedStructures = this.modifiedStructures.toMutableMap() + modifiedStructures
+    fun addModifiedStructures(namespace: String, structureSettings: StructureSettings) {
+        val modifiedStructures = this.modifiedStructures.toMap().toMutableMap()
+        modifiedStructures[namespace] = structureSettings
+        this.modifiedStructures = modifiedStructures
     }
 
     fun resetModifiedStructures() {
