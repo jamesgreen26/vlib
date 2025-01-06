@@ -71,18 +71,20 @@ private fun getStructureTemplate (structurePath: String, level: ServerLevel, shi
         "ship_" + Random.Default.nextInt().toString()
     }
 
-    val structureTemplate = structureTemplateManager.getOrCreate(ResourceLocation(structurePath, shipName))
+    val resourceLocation = if (structurePath.contains(':')) {
+        ResourceLocation(structurePath + shipName)
+    } else if (structurePath.contains('/')) {
+        throw IllegalArgumentException("Invalid structure path: the required format is either:\nnamespace\n- or -\nnamespace:folder/")
+    } else {
+        ResourceLocation(structurePath, shipName)
+    }
+
+    val structureTemplate = structureTemplateManager.getOrCreate(resourceLocation)
 
     structureTemplate.fillFromWorld(level, getMin(ship.shipAABB), getSize(ship.shipAABB), withEntities, Blocks.AIR)
 
 
-    return if (structurePath.contains(':')) {
-        Pair(structureTemplate, ResourceLocation(structurePath + shipName))
-    } else if (structurePath.contains('/')) {
-        throw IllegalArgumentException("Invalid structure path: the required format is either:\nnamespace\n- or -\nnamespace:folder/")
-    } else {
-        Pair(structureTemplate, ResourceLocation(structurePath, shipName))
-    }
+    return Pair(structureTemplate, resourceLocation)
 }
 
 private fun getMin(aabb: AABBic?): BlockPos {

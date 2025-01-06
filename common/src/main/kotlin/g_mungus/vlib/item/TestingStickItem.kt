@@ -11,7 +11,7 @@ class TestingStickItem(properties: Properties) : Item(properties) {
 
     override fun useOn(context: UseOnContext): InteractionResult {
         if (context.level.isBlockInShipyard(context.clickedPos) && context.level is ServerLevel) {
-            saveShipToTemplate("vlib", context.level as ServerLevel, context.clickedPos, withEntities = false, deleteAfter = true)
+            saveShipToTemplate("vlib:ships/", context.level as ServerLevel, context.clickedPos, withEntities = false, deleteAfter = true)
             println("used successfully")
             return InteractionResult.SUCCESS
         }

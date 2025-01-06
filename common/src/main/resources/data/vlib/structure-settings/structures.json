@@ -1,7 +1,8 @@
 {
-  "vlib/test": {
+  "vlib": {
     "placement": {
-      "rename": "false"
+      "rename": "false",
+      "folder": "ships"
     }
   }
 }
