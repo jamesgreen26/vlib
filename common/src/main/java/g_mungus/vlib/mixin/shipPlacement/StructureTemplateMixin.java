@@ -25,7 +25,7 @@ public abstract class StructureTemplateMixin {
     public void placeMixin(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, BlockPos blockPos2, StructurePlaceSettings structurePlaceSettings, RandomSource randomSource, int i, CallbackInfoReturnable<Boolean> cir) {
         if (VSGameUtilsKt.isBlockInShipyard(serverLevelAccessor.getLevel(), blockPos)) return;
 
-        if (this.author.equals(StructureManager.READY)) {
+        if (this.author.startsWith(StructureManager.READY)) {
             StructureManager.INSTANCE.enqueueTemplateForAssembly(
                     (StructureTemplate) (Object) this,
                     serverLevelAccessor.getLevel(),

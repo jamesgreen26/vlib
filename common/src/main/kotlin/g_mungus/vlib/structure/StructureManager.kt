@@ -20,7 +20,7 @@ object StructureManager {
     @Volatile
     private var modifiedStructures = mapOf<String, StructureSettings>()
 
-    val assemblyQueue: Queue<Triple<StructureTemplate, ServerLevel, BlockPos>> = java.util.ArrayDeque()
+    val assemblyQueue: Queue<Triple<StructureTemplate, ServerLevel, BlockPos>> = ArrayDeque()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -52,7 +52,7 @@ object StructureManager {
         val structurePlaceSettings = StructurePlaceSettings()
         structurePlaceSettings.setRotationPivot(centreOfShip)
 
-        val successfullyPlaced = structureTemplate.placeInWorld(serverLevel, centreOfShip, centreOfShip, structurePlaceSettings, RandomSource.create(), 2)
+        structureTemplate.placeInWorld(serverLevel, centreOfShip, centreOfShip, structurePlaceSettings, RandomSource.create(), 2)
 
         if (ship.inertiaData.mass < 0.001) {
             serverLevel.shipObjectWorld.deleteShip(ship)

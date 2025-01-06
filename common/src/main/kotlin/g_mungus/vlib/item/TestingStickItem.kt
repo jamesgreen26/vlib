@@ -15,7 +15,7 @@ class TestingStickItem(properties: Properties) : Item(properties) {
             println("used successfully")
             return InteractionResult.SUCCESS
         }
-        println("ship not found")
+        if (context.level is ServerLevel) println("ship not found")
         return super.useOn(context)
     }
 
