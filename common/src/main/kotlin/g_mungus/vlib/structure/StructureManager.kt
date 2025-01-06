@@ -2,11 +2,8 @@ package g_mungus.vlib.structure
 
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
-import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3i
 import org.valkyrienskies.mod.common.dimensionId
@@ -20,7 +17,7 @@ object StructureManager {
     @Volatile
     private var modifiedStructures = mapOf<String, StructureSettings>()
 
-    val assemblyQueue: Queue<Triple<StructureTemplate, ServerLevel, BlockPos>> = ArrayDeque()
+    val assemblyQueue: Queue<TemplateAssemblyData> = ArrayDeque()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -39,29 +36,29 @@ object StructureManager {
         return this.modifiedStructures.toMap()
     }
 
-    fun enqueueTemplateForAssembly(structureTemplate: StructureTemplate, serverLevel: ServerLevel, blockPos: BlockPos) {
-        assemblyQueue.add(Triple(structureTemplate, serverLevel, blockPos))
-        LOGGER.info("enqueueing template at $blockPos")
+    fun enqueueTemplateForAssembly(data: TemplateAssemblyData) {
+        assemblyQueue.add(data)
+        LOGGER.info("enqueueing template at ${data.pos}")
     }
 
-    fun createShipFromTemplate(structureTemplate: StructureTemplate, serverLevel: ServerLevel, blockPos: BlockPos) {
-        val ship = serverLevel.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, serverLevel.dimensionId)
+    fun createShipFromTemplate(data: TemplateAssemblyData) {
+        val ship = data.level.shipObjectWorld.createNewShipAtBlock(data.pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true
-        val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(serverLevel.yRange, Vector3i()).toBlockPos().atY(blockPos.y)
+        val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(data.pos.y)
 
         val structurePlaceSettings = StructurePlaceSettings()
         structurePlaceSettings.setRotationPivot(centreOfShip)
 
-        structureTemplate.placeInWorld(serverLevel, centreOfShip, centreOfShip, structurePlaceSettings, RandomSource.create(), 2)
+        data.template.placeInWorld(data.level, centreOfShip, centreOfShip, structurePlaceSettings, RandomSource.create(), 2)
 
         if (ship.inertiaData.mass < 0.001) {
-            serverLevel.shipObjectWorld.deleteShip(ship)
+            data.level.shipObjectWorld.deleteShip(ship)
             LOGGER.warn("Deleting ship with id: ${ship.id} because it has mass 0")
         } else {
-            ship.isStatic = false
+            data.callback(ship)
         }
-        val manager: StructureTemplateManager = serverLevel.structureManager
-        if ((manager as CanRemoveTemplate).`vlib$unloadTemplate`(structureTemplate)) {
+        val manager: StructureTemplateManager = data.level.structureManager
+        if ((manager as CanRemoveTemplate).`vlib$unloadTemplate`(data.template)) {
             LOGGER.info("Structure templates cleaned.")
         } else {
             LOGGER.error("Structure template cleanup failed")

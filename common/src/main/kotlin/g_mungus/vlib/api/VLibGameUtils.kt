@@ -1,7 +1,9 @@
 package g_mungus.vlib.api
 
 import g_mungus.vlib.VLib.LOGGER
+import g_mungus.vlib.data.StructureSettings
 import g_mungus.vlib.structure.StructureManager.enqueueTemplateForAssembly
+import g_mungus.vlib.structure.TemplateAssemblyData
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceKey
@@ -15,7 +17,10 @@ import org.joml.Vector3d
 import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
-import org.valkyrienskies.mod.common.*
+import org.valkyrienskies.mod.common.allShips
+import org.valkyrienskies.mod.common.dimensionId
+import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.shipObjectWorld
 import kotlin.random.Random
 
 /**
@@ -117,6 +122,8 @@ fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: Resou
         structureTemplateManager = structureTemplateManager
     )
 
+    val structureSettings = StructureSettings(true, "")
+
     val targetLevel = serverLevel.server.getLevel(targetDimension)?: return
 
     val shipPos = ship.shipAABB?.center(Vector3d())
@@ -131,9 +138,13 @@ fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: Resou
     }
 
     enqueueTemplateForAssembly(
-        structureTemplate = structureTemplate.first,
-        serverLevel = targetLevel,
-        shipDest
+        TemplateAssemblyData(
+            template = structureTemplate.first,
+            id = structureTemplate.second,
+            level = targetLevel,
+            pos = shipDest,
+            structureSettings = structureSettings,
+        )
     )
 
     serverLevel.shipObjectWorld.deleteShip(ship as ServerShip)
