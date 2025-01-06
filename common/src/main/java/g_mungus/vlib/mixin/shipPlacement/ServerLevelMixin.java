@@ -20,7 +20,7 @@ public class ServerLevelMixin {
         if (!StructureManager.INSTANCE.getAssemblyQueue().isEmpty()) {
             Triple<StructureTemplate, ServerLevel, BlockPos> structureData = StructureManager.INSTANCE.getAssemblyQueue().poll();
             assert structureData != null;
-            StructureManager.INSTANCE.enqueueTemplateForAssembly(structureData.getFirst(), structureData.getSecond(), structureData.getThird());
+            StructureManager.INSTANCE.createShipFromTemplate(structureData.getFirst(), structureData.getSecond(), structureData.getThird());
         }
     }
 }
