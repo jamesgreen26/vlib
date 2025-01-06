@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3i
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -14,7 +15,6 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.util.*
-import kotlin.collections.ArrayDeque
 
 object StructureManager {
     @Volatile
@@ -59,6 +59,12 @@ object StructureManager {
             LOGGER.warn("Deleting ship with id: ${ship.id} because it has mass 0")
         } else {
             ship.isStatic = false
+        }
+        val manager: StructureTemplateManager = serverLevel.structureManager
+        if ((manager as CanRemoveTemplate).`vlib$unloadTemplate`(structureTemplate)) {
+            LOGGER.info("Structure templates cleaned.")
+        } else {
+            LOGGER.error("Structure template cleanup failed")
         }
     }
 }
