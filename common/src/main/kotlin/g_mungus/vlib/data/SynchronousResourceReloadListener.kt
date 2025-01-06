@@ -27,7 +27,7 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
         resourceManager.listResources("structure-settings", predicate).forEach { (resourceLocation, resource) ->
 
             val structures = try {
-                readJsonWithJackson(resource.open())
+                StructureSettings.readJson(resource.open())
             } catch (e: Exception) {
                 LOGGER.error("Error occurred while loading resource json: $resourceLocation", e)
                 null
@@ -43,14 +43,5 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
         LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString())
     }
 
-    private fun readJsonWithJackson(inputStream: InputStream): StructureSettings? {
-        val objectMapper = jacksonObjectMapper()
-        return inputStream.use {
-            try {
-                objectMapper.readValue(it, StructureSettings::class.java)
-            } catch (e: MismatchedInputException) {
-                null
-            }
-        }
-    }
+
 }
