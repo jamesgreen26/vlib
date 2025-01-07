@@ -12,83 +12,89 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3d
 import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
-import org.valkyrienskies.mod.common.allShips
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
-import kotlin.random.Random
+
 
 /**
- * Saves the ship found at the given BlockPos to a structure template, optionally deleting the ship after.
+ * Saves the ship found at the given (shipyard) BlockPos to a structure template, optionally deleting the ship after.
  *
- * @param structurePath The namespace or directory to save the structure template. Can either be in the format <namespace> or <namespace:folder/>"
+ * @param structurePath The namespace or directory to save the structure template. Can either be in the format `namespace` or `namespace:folder/`
  * @param level The relevant ServerLevel
  * @param blockPos A block position in the shipyard on the ship to be saved
  * @param withEntities Whether to save non-player entities from the ship. I haven't tested it yet.
  * @param deleteAfter Whether to delete the ship after it has been saved to a structure template.
  *
- * @return nothing
+ * @return A [Pair] with the [StructureTemplate] made and its saved-to [ResourceLocation]. Or null if no ship was found at the [blockPos]
  */
-fun saveShipToTemplate(structurePath: String, level: ServerLevel, blockPos: BlockPos, withEntities: Boolean, deleteAfter: Boolean) {
-    val shipID = level.getShipManagingPos(blockPos)?.id
-    if (shipID != null) {
-        saveShipToTemplate(structurePath, level, shipID, withEntities, deleteAfter)
+fun saveShipToTemplate(structurePath: String, level: ServerLevel, blockPos: BlockPos, withEntities: Boolean, deleteAfter: Boolean): Pair<StructureTemplate, ResourceLocation>? {
+    val ship = level.getShipManagingPos(blockPos)
+    if (ship != null) {
+        return saveShipToTemplate(structurePath, level, ship, withEntities, deleteAfter)
     } else {
-        LOGGER.error("Could not find ship for blockPos: $blockPos in world: ${level.dimensionId}")
+        LOGGER.warn("Could not find ship for blockPos: $blockPos in world: ${level.dimensionId}")
+        return null
     }
 }
 
+
 /**
- * Saves the ship of the given ship ID to a structure template, optionally deleting the ship after.
+ * Saves the given ship to a structure template, optionally deleting the ship after.
  *
  * @param structurePath The namespace or directory to save the structure template. Can either be in the format <namespace> or <namespace:folder/>"
  * @param level The relevant ServerLevel
- * @param shipId The shipID of the ship to be saved
+ * @param ship The ship to be saved
  * @param withEntities Whether to save non-player entities from the ship. I haven't tested it yet.
  * @param deleteAfter Whether to delete the ship after it has been saved to a structure template.
  *
- * @return nothing
+ * @return A [Pair] with the [StructureTemplate] made and its saved-to [ResourceLocation]
  */
-fun saveShipToTemplate(structurePath: String, level: ServerLevel, shipId: Long, withEntities: Boolean, deleteAfter: Boolean) {
-    val ship = level.allShips.getById(shipId)
-    if (ship == null) {
-        LOGGER.error("Could not find ship id: $shipId in world: ${level.dimensionId}")
-        return
-    }
+fun saveShipToTemplate(structurePath: String, level: ServerLevel, ship: Ship, withEntities: Boolean, deleteAfter: Boolean): Pair<StructureTemplate, ResourceLocation> {
 
-    val structureTemplateManager = level.structureManager
-    structureTemplateManager.save(getStructureTemplate(structurePath, level, ship, withEntities, structureTemplateManager).second)
+    // Make a filename like 'ship_slug_goes_here' for later
+    val filename = getShipFilename(ship)
 
-    if (deleteAfter) { level.shipObjectWorld.deleteShip(ship as ServerShip) }
-}
-
-private fun getStructureTemplate (structurePath: String, level: ServerLevel, ship: Ship, withEntities: Boolean, structureTemplateManager: StructureTemplateManager): Pair<StructureTemplate, ResourceLocation> {
-
-    val shipName: String = if (ship.slug != null) {
-        ship.slug!!
-    } else {
-        "ship_" + Random.Default.nextInt().toString()
-    }
-
+    // Make a resource location from the structurePath
     val resourceLocation = if (structurePath.contains(':')) {
-        ResourceLocation(structurePath + shipName)
+        ResourceLocation(structurePath + filename)
     } else if (structurePath.contains('/')) {
         throw IllegalArgumentException("Invalid structure path: the required format is either:\nnamespace\n- or -\nnamespace:folder/")
     } else {
-        ResourceLocation(structurePath, shipName)
+        ResourceLocation(structurePath, filename)
     }
 
-    val structureTemplate = structureTemplateManager.getOrCreate(resourceLocation)
+    // Make a new structure template at the resource location
+    val structureTemplate = level.structureManager.getOrCreate(resourceLocation)
 
+    // Save all ship blocks to the structure template
     structureTemplate.fillFromWorld(level, getMin(ship.shipAABB), getSize(ship.shipAABB), withEntities, Blocks.AIR)
 
+    // Save the structure template back to the resource location
+    level.structureManager.save(resourceLocation)
+
+    // Delete the ship if we need to
+    if (deleteAfter) { level.shipObjectWorld.deleteShip(ship as ServerShip) }
 
     return Pair(structureTemplate, resourceLocation)
+}
+
+/**
+ * Returns a nice string name for a ship.
+ * Will first try to use the ships slug,
+ * then the ship's id if no slug was found.
+ * @ship The ship to get the name of
+ */
+private fun getShipFilename(ship: Ship): String {
+    return if (ship.slug != null) {
+        ship.slug!!
+    } else {
+        "ship_num_" + ship.id
+    }
 }
 
 private fun getMin(aabb: AABBic?): BlockPos {
@@ -113,13 +119,13 @@ private fun getSize(aabb: AABBic?): Vec3i {
  * Untested
  */
 fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: ResourceKey<Level>) {
-    val structureTemplateManager = serverLevel.structureManager
-    val structureTemplate = getStructureTemplate(
+
+    val structureTemplate = saveShipToTemplate(
         structurePath = "vlib:interdimensional/",
         level = serverLevel,
         ship = ship,
         withEntities = true,
-        structureTemplateManager = structureTemplateManager
+        deleteAfter = true
     )
 
     val structureSettings = StructureSettings(
@@ -150,8 +156,6 @@ fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: Resou
             structureSettings = structureSettings,
         )
     )
-
-    serverLevel.shipObjectWorld.deleteShip(ship as ServerShip)
 
 }
 
