@@ -1,6 +1,7 @@
 package g_mungus.vlib.item
 
 import g_mungus.vlib.api.*
+import g_mungus.vlib.api.VLibGameUtils.saveShipToTemplate
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Item

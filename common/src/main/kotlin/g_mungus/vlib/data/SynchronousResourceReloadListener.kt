@@ -34,7 +34,9 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
             }
 
             if (structures != null) {
-                StructureManager.addModifiedStructures(resourceLocation.namespace, structures)
+                val namespace = resourceLocation.path.split("/").last().replace(".json", "")
+
+                StructureManager.addModifiedStructures(namespace, structures)
             } else {
                 LOGGER.warn("Skipping resource at $resourceLocation because it could not be parsed.")
             }
