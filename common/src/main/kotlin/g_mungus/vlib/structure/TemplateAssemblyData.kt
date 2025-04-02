@@ -33,10 +33,11 @@ class TemplateAssemblyData (
 
     private fun getName(location: String): String? {
         val i = location.lastIndexOf('/')
-        if (i >= 0) {
-            return location.substring(i + 1)
-        }
-        return null
+        return if (i >= 0) {
+            location.substring(i + 1)
+        } else if (location.isNotBlank()) {
+            location
+        } else null
     }
 }
 
