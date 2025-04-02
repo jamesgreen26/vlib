@@ -1,5 +1,6 @@
 package g_mungus.vlib.structure
 
+import g_mungus.vlib.VLib
 import g_mungus.vlib.data.StructureSettings
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
@@ -18,7 +19,11 @@ class TemplateAssemblyData (
     fun callback(ship: Ship) {
         if (structureSettings.rename == true) {
             val name = getName(id.path)
-            if (name != null) (ship as ServerShip).slug = id.toDebugFileName()
+            if (name != null) {
+                (ship as ServerShip).slug = name
+            } else {
+                VLib.LOGGER.warn("Failed to rename ship")
+            }
         }
         if (structureSettings.static != true) {
             (ship as ServerShip).isStatic = false
