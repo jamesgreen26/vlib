@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 object VLib {
     const val MOD_ID = "vlib"
     val LOGGER: Logger = LoggerFactory.getLogger("VLib")
+    const val MAX_RECURSION = 10_000_000
 
 
     @JvmStatic

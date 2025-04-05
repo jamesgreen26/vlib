@@ -1,16 +1,21 @@
 package g_mungus.vlib.api
 
 import g_mungus.vlib.VLib.LOGGER
+import g_mungus.vlib.VLib.MOD_ID
 import g_mungus.vlib.data.StructureSettings
+import g_mungus.vlib.structure.StructureManager
 import g_mungus.vlib.structure.StructureManager.enqueueTemplateForAssembly
 import g_mungus.vlib.structure.TemplateAssemblyData
+import g_mungus.vlib.util.CanFillByConnectivity
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3d
@@ -24,6 +29,25 @@ import org.valkyrienskies.mod.common.shipObjectWorld
 import kotlin.random.Random
 
 object VLibGameUtils {
+
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) {
+        val manager = level.structureManager
+
+        val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
+
+        val template = manager.getOrCreate(id)
+
+        (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos).whenComplete { t, u ->
+            t?.let {
+                template.author = StructureManager.READY + "%" + id
+                template.placeInWorld(level, t.second, t.second, StructurePlaceSettings(), RandomSource.create(), 2)
+                it.first.forEach { pos ->
+                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2)
+                }
+            }
+            u?.printStackTrace()
+        }
+    }
 
     /**
      * Saves the ship found at the given BlockPos to a structure template, optionally deleting the ship after.
@@ -69,8 +93,7 @@ object VLibGameUtils {
         withEntities: Boolean,
         deleteAfter: Boolean
     ) {
-        val ship = level.allShips.getById(shipId)
-        if (ship == null) {
+        val ship = level.allShips.getById(shipId)?: let {
             LOGGER.error("Could not find ship id: $shipId in world: ${level.dimensionId}")
             return
         }
@@ -98,12 +121,7 @@ object VLibGameUtils {
         withEntities: Boolean,
         structureTemplateManager: StructureTemplateManager
     ): Pair<StructureTemplate, ResourceLocation> {
-
-        val shipName: String = if (ship.slug != null) {
-            ship.slug!!
-        } else {
-            "ship_" + Random.Default.nextInt().toString()
-        }
+        val shipName: String = ship.slug?: "ship_${Random.Default.nextInt()}"
 
         val resourceLocation = if (structurePath.contains(':')) {
             ResourceLocation(structurePath + shipName)

@@ -3,6 +3,7 @@
   "package": "g_mungus.vlib.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "shipAssembly.StructureTemplateMixin",
     "shipPlacement.ServerLevelMixin",
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin"

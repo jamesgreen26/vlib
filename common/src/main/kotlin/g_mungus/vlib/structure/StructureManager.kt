@@ -2,6 +2,7 @@ package g_mungus.vlib.structure
 
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
+import g_mungus.vlib.util.CanRemoveTemplate
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager

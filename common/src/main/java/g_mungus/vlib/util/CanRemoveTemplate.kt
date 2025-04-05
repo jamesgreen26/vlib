@@ -1,4 +1,4 @@
-package g_mungus.vlib.structure
+package g_mungus.vlib.util
 
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 

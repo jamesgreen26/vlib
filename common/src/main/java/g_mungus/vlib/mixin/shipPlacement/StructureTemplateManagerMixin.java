@@ -2,7 +2,7 @@ package g_mungus.vlib.mixin.shipPlacement;
 
 
 import g_mungus.vlib.data.StructureSettings;
-import g_mungus.vlib.structure.CanRemoveTemplate;
+import g_mungus.vlib.util.CanRemoveTemplate;
 import g_mungus.vlib.structure.StructureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
