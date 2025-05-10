@@ -7,6 +7,9 @@ import g_mungus.vlib.structure.StructureManager
 import g_mungus.vlib.structure.StructureManager.enqueueTemplateForAssembly
 import g_mungus.vlib.structure.TemplateAssemblyData
 import g_mungus.vlib.util.CanFillByConnectivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceKey
@@ -41,8 +44,10 @@ object VLibGameUtils {
             t?.let {
                 template.author = StructureManager.READY + "%" + id
                 template.placeInWorld(level, t.second, t.second, StructurePlaceSettings(), RandomSource.create(), 2)
-                it.first.forEach { pos ->
-                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2)
+                CoroutineScope(Dispatchers.Default).launch {
+                    it.first.forEach { pos ->
+                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2)
+                    }
                 }
             }
             u?.printStackTrace()

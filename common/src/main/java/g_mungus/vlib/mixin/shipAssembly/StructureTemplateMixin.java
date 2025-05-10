@@ -66,20 +66,20 @@ public abstract class StructureTemplateMixin implements CanFillByConnectivity {
             if (throwable != null) {
                 output.completeExceptionally(throwable);
             } else {
-                BlockPos minCorner = VectorConversionsMCKt.toBlockPos(res.component2());
-                BlockPos maxCorner = VectorConversionsMCKt.toBlockPos(res.component3());
+                BlockPos minCorner = VectorConversionsMCKt.toBlockPos(res.getMiddle());
+                BlockPos maxCorner = VectorConversionsMCKt.toBlockPos(res.getRight());
 
                 List<StructureTemplate.StructureBlockInfo> basicBlocks = Lists.newArrayList();
                 List<StructureTemplate.StructureBlockInfo> blocksWithEntities = Lists.newArrayList();
                 List<StructureTemplate.StructureBlockInfo> specialBlocks = Lists.newArrayList();
 
                 this.size = new Vec3i(
-                        maxCorner.getX() - minCorner.getX(),
-                        maxCorner.getY() - minCorner.getY(),
-                        maxCorner.getZ() - minCorner.getZ()
+                        maxCorner.getX() - minCorner.getX() + 1,
+                        maxCorner.getY() - minCorner.getY() + 1,
+                        maxCorner.getZ() - minCorner.getZ() + 1
                 );
 
-                for (BlockPos currentWorldPos : res.component1()) {
+                for (BlockPos currentWorldPos : res.getLeft()) {
                     BlockPos relativePos = currentWorldPos.subtract(minCorner);
                     BlockState blockState = level.getBlockState(currentWorldPos);
 
@@ -98,7 +98,7 @@ public abstract class StructureTemplateMixin implements CanFillByConnectivity {
                 this.entityInfoList.clear();
                 this.palettes.clear();
                 this.palettes.add(vlib$newPalette(finalBlockList));
-                output.complete(new Pair<>(res.component1(),minCorner));
+                output.complete(new Pair<>(res.getLeft(),minCorner));
             }
         });
         return output;

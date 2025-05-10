@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+import org.apache.commons.lang3.tuple.Triple
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.joml.primitives.AABBi
@@ -46,21 +47,22 @@ val defaultValidBlock: (BlockState) -> Boolean = {
 fun findConnectedBlocks(
     level: Level,
     start: BlockPos,
-): CompletionStage<Triple<Set<BlockPos>, Vector3ic, Vector3ic>> = CompletableFuture<Triple<Set<BlockPos>, Vector3ic, Vector3ic>>().also { future ->
-    val result = mutableSetOf<BlockPos>()
-    val visited = mutableSetOf<BlockPos>()
-    val queue: ArrayDeque<BlockPos> = ArrayDeque()
+): CompletionStage<Triple<Set<BlockPos>, Vector3ic, Vector3ic>> =
+    CompletableFuture<Triple<Set<BlockPos>, Vector3ic, Vector3ic>>().also { future ->
+        val result = mutableSetOf<BlockPos>()
+        val visited = mutableSetOf<BlockPos>()
+        val queue: ArrayDeque<BlockPos> = ArrayDeque()
 
-    val min = Vector3i(Int.MAX_VALUE)
-    val max = Vector3i(Int.MIN_VALUE)
+        val min = Vector3i(Int.MAX_VALUE)
+        val max = Vector3i(Int.MIN_VALUE)
 
-    if (!defaultValidBlock(level.getBlockState(start))) future.complete(Triple(emptySet(), Vector3i(), Vector3i()))
+        if (!defaultValidBlock(level.getBlockState(start))) future.complete(Triple.of(emptySet(), Vector3i(), Vector3i()))
 
-    queue.add(start)
-    visited.add(start)
+        queue.add(start)
+        visited.add(start)
 
 
-    CoroutineScope(Dispatchers.Default).launch {
+
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
             result.add(current)
@@ -89,9 +91,9 @@ fun findConnectedBlocks(
                 }
             }
         }
-        future.complete(Triple(result, min, max))
+        future.complete(Triple.of(result, min, max))
+
     }
-}
 
 private fun updateBounds(current: BlockPos, min: Vector3i, max: Vector3i) {
     if (current.x < min.x) {
