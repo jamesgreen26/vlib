@@ -7,9 +7,6 @@ import g_mungus.vlib.structure.StructureManager
 import g_mungus.vlib.structure.StructureManager.enqueueTemplateForAssembly
 import g_mungus.vlib.structure.TemplateAssemblyData
 import g_mungus.vlib.util.CanFillByConnectivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceKey
@@ -17,6 +14,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
@@ -31,6 +29,7 @@ import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import kotlin.random.Random
 
+
 object VLibGameUtils {
 
     fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) {
@@ -44,10 +43,16 @@ object VLibGameUtils {
             t?.let {
                 template.author = StructureManager.READY + "%" + id
                 template.placeInWorld(level, t.second, t.second, StructurePlaceSettings(), RandomSource.create(), 2)
-                CoroutineScope(Dispatchers.Default).launch {
-                    it.first.forEach { pos ->
-                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2)
+                it.first.forEach { pos ->
+                    val be = level.getBlockEntity(pos)
+                    if (be != null) {
+                        level.removeBlockEntity(pos)
                     }
+
+                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_NONE)
+                }
+                it.first.forEach { pos ->
+                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
                 }
             }
             u?.printStackTrace()
@@ -98,7 +103,7 @@ object VLibGameUtils {
         withEntities: Boolean,
         deleteAfter: Boolean
     ) {
-        val ship = level.allShips.getById(shipId)?: let {
+        val ship = level.allShips.getById(shipId) ?: let {
             LOGGER.error("Could not find ship id: $shipId in world: ${level.dimensionId}")
             return
         }
@@ -126,7 +131,7 @@ object VLibGameUtils {
         withEntities: Boolean,
         structureTemplateManager: StructureTemplateManager
     ): Pair<StructureTemplate, ResourceLocation> {
-        val shipName: String = ship.slug?: "ship_${Random.Default.nextInt()}"
+        val shipName: String = ship.slug ?: "ship_${Random.Default.nextInt()}"
 
         val resourceLocation = if (structurePath.contains(':')) {
             ResourceLocation(structurePath + shipName)
