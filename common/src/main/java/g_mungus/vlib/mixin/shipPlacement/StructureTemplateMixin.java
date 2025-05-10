@@ -31,6 +31,8 @@ public abstract class StructureTemplateMixin {
 
     @Inject(method = "placeInWorld", at = @At("HEAD"), cancellable = true)
     public void placeMixin(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, BlockPos blockPos2, StructurePlaceSettings structurePlaceSettings, RandomSource randomSource, int i, CallbackInfoReturnable<Boolean> cir) {
+        if (serverLevelAccessor.isClientSide()) return;
+
         if (VSGameUtilsKt.isBlockInShipyard(serverLevelAccessor.getLevel(), blockPos)) return;
 
         if (this.author.startsWith(StructureManager.READY)) {
