@@ -3,10 +3,14 @@ package g_mungus.vlib.structure
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
 import g_mungus.vlib.util.CanRemoveTemplate
+import net.minecraft.core.BlockPos
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
+import org.joml.Vector3d
 import org.joml.Vector3i
+import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
@@ -43,9 +47,14 @@ object StructureManager {
     }
 
     fun createShipFromTemplate(data: TemplateAssemblyData) {
-        val ship = data.level.shipObjectWorld.createNewShipAtBlock(data.pos.toJOML(), false, 1.0, data.level.dimensionId)
+        var pos = data.pos
+        if (data.level.isOutsideBuildHeight(data.pos)) {
+            pos = BlockPos(pos.x, 0, pos.z)
+        }
+
+        val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true
-        val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(data.pos.y)
+        val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(pos.y)
 
         val structurePlaceSettings = StructurePlaceSettings()
         structurePlaceSettings.setRotationPivot(centreOfShip)
@@ -56,6 +65,10 @@ object StructureManager {
             data.level.shipObjectWorld.deleteShip(ship)
             LOGGER.warn("Deleting ship with id: ${ship.id} because it has mass 0")
         } else {
+            if (pos != data.pos) {
+                data.level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(data.pos.x.toDouble(), data.pos.y.toDouble(), data.pos.z.toDouble())))
+            }
+
             data.callback(ship)
         }
         val manager: StructureTemplateManager = data.level.structureManager
