@@ -1,6 +1,7 @@
 package g_mungus.vlib.mixin.shipAssembly;
 
 import com.google.common.collect.Lists;
+import g_mungus.vlib.VLib;
 import g_mungus.vlib.util.CanFillByConnectivity;
 import kotlin.Pair;
 import net.minecraft.core.BlockPos;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -47,13 +49,17 @@ public abstract class StructureTemplateMixin implements CanFillByConnectivity {
     private static void addToLists(StructureTemplate.StructureBlockInfo blockInfo, List<StructureTemplate.StructureBlockInfo> basicBlocks, List<StructureTemplate.StructureBlockInfo> blocksWithEntities, List<StructureTemplate.StructureBlockInfo> specialBlocks) {}
 
     @Unique
-    private static Constructor<?> vlib$paletteConstructor = StructureTemplate.Palette.class.getConstructors()[0];
+    private static Constructor<?> vlib$paletteConstructor = null;
 
     @Unique
     private static StructureTemplate.Palette vlib$newPalette(List<StructureTemplate.StructureBlockInfo> blockInfoList) {
         try {
+            if (vlib$paletteConstructor == null) {
+                vlib$paletteConstructor = StructureTemplate.Palette.class.getConstructors()[0];
+            }
             return (StructureTemplate.Palette) vlib$paletteConstructor.newInstance(blockInfoList);
         } catch (Exception e) {
+            VLib.INSTANCE.getLOGGER().error("Uh oh", e);
             return null;
         }
     }
