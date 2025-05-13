@@ -1,6 +1,7 @@
 package g_mungus.vlib.mixin.shipPlacement;
 
 
+import g_mungus.vlib.VLib;
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.util.CanRemoveTemplate;
 import g_mungus.vlib.structure.StructureManager;
@@ -8,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +31,6 @@ public abstract class StructureTemplateManagerMixin implements CanRemoveTemplate
 
     @Shadow public abstract void remove(ResourceLocation id);
 
-    @Shadow @Final private static Logger LOGGER;
 
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
     public void getTemplateMixin(ResourceLocation id, CallbackInfoReturnable<Optional<StructureTemplate>> cir) {
@@ -42,7 +41,7 @@ public abstract class StructureTemplateManagerMixin implements CanRemoveTemplate
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
             if (id.getPath().startsWith(structureSettings.getFolder())) {
                 template.get().setAuthor(StructureManager.READY + "%" + id);
-                LOGGER.info("prepping template with author: {}", template.get().getAuthor());
+                VLib.INSTANCE.getLOGGER().info("prepping template with author: {}", template.get().getAuthor());
             }
         }
         cir.setReturnValue(template);

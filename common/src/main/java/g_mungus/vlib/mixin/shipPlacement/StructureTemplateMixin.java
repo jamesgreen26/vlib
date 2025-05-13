@@ -3,8 +3,6 @@ package g_mungus.vlib.mixin.shipPlacement;
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.structure.StructureManager;
 import g_mungus.vlib.structure.TemplateAssemblyData;
-
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;

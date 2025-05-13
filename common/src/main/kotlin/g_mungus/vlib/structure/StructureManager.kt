@@ -9,7 +9,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3d
 import org.joml.Vector3i
-import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -17,12 +16,16 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object StructureManager {
     @Volatile
     private var modifiedStructures = mapOf<String, StructureSettings>()
 
-    val assemblyQueue: Queue<TemplateAssemblyData> = ArrayDeque()
+    val assemblyQueue: Queue<TemplateAssemblyData> = ConcurrentLinkedQueue()
+
+    val blacklist: ConcurrentHashMap<BlockPos, Long> = ConcurrentHashMap()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -48,9 +51,16 @@ object StructureManager {
 
     fun createShipFromTemplate(data: TemplateAssemblyData) {
         var pos = data.pos
+        val now = Date().time
+
+        if (blacklist.keys.contains(pos)) return
+        blacklist[pos] = now
+
         if (data.level.isOutsideBuildHeight(data.pos)) {
             pos = BlockPos(pos.x, 0, pos.z)
         }
+
+        if (blacklist[pos] != now) return
 
         val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true
