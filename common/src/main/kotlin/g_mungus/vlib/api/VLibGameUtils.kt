@@ -2,24 +2,18 @@ package g_mungus.vlib.api
 
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.VLib.MOD_ID
-import g_mungus.vlib.data.StructureSettings
 import g_mungus.vlib.structure.StructureManager
-import g_mungus.vlib.structure.StructureManager.enqueueTemplateForAssembly
-import g_mungus.vlib.structure.TemplateAssemblyData
 import g_mungus.vlib.util.CanFillByConnectivity
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
-import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
-import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
-import org.joml.Vector3d
 import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
@@ -124,7 +118,13 @@ object VLibGameUtils {
         }
     }
 
-    private fun getStructureTemplate(
+    /**
+     * Creates a structure template to represent the provided ship, without saving it to disk. Useful if you want to use the template immediately and discard it afterward.
+     *
+     * @return a pair of the structure template and the resource location where it would be saved.
+     **/
+
+    fun getStructureTemplate(
         structurePath: String,
         level: ServerLevel,
         ship: Ship,
@@ -164,56 +164,5 @@ object VLibGameUtils {
         } else {
             throw Exception("Why doesn't the ship have a shipyard AABB?")
         }
-    }
-
-
-    /**
-     * Untested
-     */
-    fun changeDimension(ship: Ship, serverLevel: ServerLevel, targetDimension: ResourceKey<Level>) {
-        val structureTemplateManager = serverLevel.structureManager
-        val structureTemplate = getStructureTemplate(
-            structurePath = "vlib:interdimensional/",
-            level = serverLevel,
-            ship = ship,
-            withEntities = true,
-            structureTemplateManager = structureTemplateManager
-        )
-
-        val structureSettings = StructureSettings(
-            folder = "",
-            rename = true,
-            static = false
-        )
-
-        val targetLevel = serverLevel.server.getLevel(targetDimension) ?: return
-
-        val shipPos = ship.shipAABB?.center(Vector3d())
-        var shipDest = BlockPos(0, 0, 0)
-
-        if (shipPos != null) {
-            if (targetLevel.maxBuildHeight > (shipPos.y + ship.shipAABB!!.maxY() - ship.shipAABB!!.minY())) {
-                shipDest = BlockPos(shipPos.x.toInt(), shipPos.y.toInt(), shipPos.z.toInt())
-            } else {
-                shipDest = BlockPos(
-                    shipPos.x.toInt(),
-                    targetLevel.maxBuildHeight - ship.shipAABB!!.maxY() + ship.shipAABB!!.minY(),
-                    shipPos.z.toInt()
-                )
-            }
-        }
-
-        enqueueTemplateForAssembly(
-            TemplateAssemblyData(
-                template = structureTemplate.first,
-                id = structureTemplate.second,
-                level = targetLevel,
-                pos = shipDest,
-                structureSettings = structureSettings,
-            )
-        )
-
-        serverLevel.shipObjectWorld.deleteShip(ship as ServerShip)
-
     }
 }
