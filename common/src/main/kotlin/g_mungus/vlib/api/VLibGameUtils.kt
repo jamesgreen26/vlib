@@ -4,6 +4,9 @@ import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.VLib.MOD_ID
 import g_mungus.vlib.structure.StructureManager
 import g_mungus.vlib.util.CanFillByConnectivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceLocation
@@ -43,10 +46,12 @@ object VLibGameUtils {
                         level.removeBlockEntity(pos)
                     }
 
-                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_NONE)
+                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_CLIENTS)
                 }
-                it.first.forEach { pos ->
-                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
+                CoroutineScope(Dispatchers.Default).launch {
+                    it.first.forEach { pos ->
+                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
+                    }
                 }
             }
             u?.printStackTrace()
