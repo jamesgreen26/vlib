@@ -53,14 +53,14 @@ object StructureManager {
         var pos = data.pos
         val now = Date().time
 
-        if (blacklist.keys.contains(pos)) return
-        blacklist[pos] = now
+        if (blacklist.keys.contains(data.pos)) return
+        blacklist[data.pos] = now
 
         if (data.level.isOutsideBuildHeight(data.pos)) {
             pos = BlockPos(pos.x, 0, pos.z)
         }
 
-        if (blacklist[pos] != now) return
+        if (blacklist[data.pos] != now) return
 
         val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true
