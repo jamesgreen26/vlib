@@ -3,6 +3,8 @@ package g_mungus.vlib.structure
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
 import g_mungus.vlib.util.CanRemoveTemplate
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import net.minecraft.core.BlockPos
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
@@ -25,7 +27,7 @@ object StructureManager {
 
     val assemblyQueue: Queue<TemplateAssemblyData> = ConcurrentLinkedQueue()
 
-    val blacklist: ConcurrentHashMap<BlockPos, Long> = ConcurrentHashMap()
+    val blacklist: ConcurrentHashMap<BlockPos, Pair<Long, String>> = ConcurrentHashMap()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -52,15 +54,16 @@ object StructureManager {
     fun createShipFromTemplate(data: TemplateAssemblyData) {
         var pos = data.pos
         val now = Date().time
+        val id = UUID.randomUUID().toString()
 
         if (blacklist.keys.contains(data.pos)) return
-        blacklist[data.pos] = now
+        blacklist[data.pos] = now to id
 
         if (data.level.isOutsideBuildHeight(data.pos)) {
             pos = BlockPos(pos.x, 0, pos.z)
         }
 
-        if (blacklist[data.pos] != now) return
+        if (blacklist[data.pos]?.second != id) return
 
         val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true

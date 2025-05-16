@@ -26,7 +26,7 @@ public class ServerLevelMixin {
 
         long now = new Date().getTime();
         StructureManager.INSTANCE.getBlacklist().forEach((blockPos, timestamp) -> {
-            if (now > timestamp + 5_000) {
+            if (now > timestamp.getFirst() + 60_000) {
                 StructureManager.INSTANCE.getBlacklist().remove(blockPos);
                 VLib.INSTANCE.getLOGGER().info("{} is now free", blockPos.toShortString());
             }
