@@ -23,17 +23,25 @@ import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.mod.common.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import kotlin.random.Random
 
 
 object VLibGameUtils {
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) {
-        val manager = level.structureManager
+    /**
+     * Assembles the block and all connected blocks, within reasonable size.
+     *
+     * @return A completion stage which completes with the created ship when assembly is finished, or null if the blockPos specified was in the shipyard already.
+     **/
 
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship>? {
+        if (level.isBlockInShipyard(blockPos)) return null
+
+        val future = CompletableFuture<Ship>()
         val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
-
-        val template = manager.getOrCreate(id)
+        val template = level.structureManager.getOrCreate(id)
 
         (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos).whenComplete { t, u ->
             t?.let {
@@ -53,16 +61,19 @@ object VLibGameUtils {
                         delay(100)
                         ship = level.getShipsIntersecting(AABB(blockPos)).toList().firstOrNull()
                     }
+                    delay(40)
 
                     it.first.forEach { pos ->
                         level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
                     }
 
                     (ship as ServerShip).isStatic = false
+                    future.complete(ship)
                 }
             }
             u?.printStackTrace()
         }
+        return future
     }
 
     /**

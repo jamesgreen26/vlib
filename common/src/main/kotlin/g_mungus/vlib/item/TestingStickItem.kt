@@ -15,6 +15,8 @@ class TestingStickItem(properties: Properties) : Item(properties) {
         if (context.level is ServerLevel) {
             VLibGameUtils.assembleByConnectivity(context.level as ServerLevel, context.clickedPos)
         }
+
+        context.player?.swing(context.hand)
         return super.useOn(context)
     }
 
