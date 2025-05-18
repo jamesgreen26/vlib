@@ -6,6 +6,7 @@ import g_mungus.vlib.structure.StructureManager
 import g_mungus.vlib.util.CanFillByConnectivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
@@ -17,13 +18,11 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
+import net.minecraft.world.phys.AABB
 import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
-import org.valkyrienskies.mod.common.allShips
-import org.valkyrienskies.mod.common.dimensionId
-import org.valkyrienskies.mod.common.getShipManagingPos
-import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.*
 import kotlin.random.Random
 
 
@@ -46,12 +45,20 @@ object VLibGameUtils {
                         level.removeBlockEntity(pos)
                     }
 
-                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_CLIENTS)
+                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_NONE)
                 }
                 CoroutineScope(Dispatchers.Default).launch {
+                    var ship: Ship? = null
+                    while(ship == null) {
+                        delay(100)
+                        ship = level.getShipsIntersecting(AABB(blockPos)).toList().firstOrNull()
+                    }
+
                     it.first.forEach { pos ->
                         level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
                     }
+
+                    (ship as ServerShip).isStatic = false
                 }
             }
             u?.printStackTrace()
