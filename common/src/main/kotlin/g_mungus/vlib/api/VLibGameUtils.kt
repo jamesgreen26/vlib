@@ -53,7 +53,7 @@ object VLibGameUtils {
                         level.removeBlockEntity(pos)
                     }
 
-                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_NONE)
+                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 0)
                 }
                 CoroutineScope(Dispatchers.Default).launch {
                     var ship: Ship? = null
