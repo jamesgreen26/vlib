@@ -7,12 +7,15 @@ import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
 import g_mungus.vlib.block.GhostPlatformBlock
 import g_mungus.vlib.item.AssemblyStickItem
+import net.minecraft.world.item.CreativeModeTabs
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.RegistryObject
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 @Mod(VLib.MOD_ID)
@@ -36,6 +39,12 @@ class VLibForge {
         MOD_BUS.addListener { event: FMLCommonSetupEvent ->
             VLib.GHOST_BLOCK = this.GHOST_BLOCK.get()
             VLib.ASSEMBLY_STICK = this.ASSEMBLY_STICK.get()
+        }
+
+        MOD_BUS.addListener { event: BuildCreativeModeTabContentsEvent ->
+            if (event.tabKey == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+                event.accept(VLib.ASSEMBLY_STICK)
+            }
         }
 
         init()
