@@ -61,7 +61,7 @@ object VLibGameUtils {
                         delay(100)
                         ship = level.getShipsIntersecting(AABB(blockPos)).toList().firstOrNull()
                     }
-                    delay(40)
+                    delay(200)
 
                     it.first.forEach { pos ->
                         level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
