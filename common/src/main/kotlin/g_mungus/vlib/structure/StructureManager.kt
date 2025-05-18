@@ -82,7 +82,7 @@ object StructureManager {
                 data.level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(data.pos.x.toDouble(), data.pos.y.toDouble(), data.pos.z.toDouble())))
             }
 
-            data.callback(ship)
+            data.callback(ship, centreOfShip)
         }
         val manager: StructureTemplateManager = data.level.structureManager
         if ((manager as CanRemoveTemplate).`vlib$unloadTemplate`(data.template)) {
