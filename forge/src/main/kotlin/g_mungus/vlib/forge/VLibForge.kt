@@ -6,7 +6,7 @@ import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
 import g_mungus.vlib.block.GhostPlatformBlock
-import g_mungus.vlib.item.TestingStickItem
+import g_mungus.vlib.item.AssemblyStickItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
@@ -21,7 +21,7 @@ class VLibForge {
     private val blockRegister: DeferredRegister<Block> = DeferredRegister.create(ForgeRegistries.BLOCKS, VLib.MOD_ID)
 
     private val GHOST_BLOCK: RegistryObject<GhostPlatformBlock> = blockRegister.register("ghost_block") { GhostPlatformBlock() }
-    private val TESTING_STICK: RegistryObject<TestingStickItem> = itemRegister.register("testing_stick") { TestingStickItem() }
+    private val ASSEMBLY_STICK: RegistryObject<AssemblyStickItem> = itemRegister.register("assembly_stick") { AssemblyStickItem() }
 
     init {
         itemRegister.register(MOD_BUS)
@@ -35,7 +35,7 @@ class VLibForge {
 
         MOD_BUS.addListener { event: FMLCommonSetupEvent ->
             VLib.GHOST_BLOCK = this.GHOST_BLOCK.get()
-            VLib.TESTING_STICK = this.TESTING_STICK.get()
+            VLib.ASSEMBLY_STICK = this.ASSEMBLY_STICK.get()
         }
 
         init()

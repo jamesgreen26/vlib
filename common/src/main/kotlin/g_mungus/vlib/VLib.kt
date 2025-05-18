@@ -14,7 +14,7 @@ object VLib {
     const val MAX_RECURSION = Short.MAX_VALUE * 4
 
     lateinit var GHOST_BLOCK: Block
-    lateinit var TESTING_STICK: Item
+    lateinit var ASSEMBLY_STICK: Item
 
     @JvmStatic
     fun init() {

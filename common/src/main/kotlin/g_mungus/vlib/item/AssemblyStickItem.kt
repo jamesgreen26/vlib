@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.context.UseOnContext
 
-class TestingStickItem : Item(Properties().rarity(Rarity.EPIC)) {
+class AssemblyStickItem : Item(Properties().rarity(Rarity.EPIC)) {
 
     override fun useOn(context: UseOnContext): InteractionResult {
 

@@ -4,7 +4,7 @@ import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
 import g_mungus.vlib.block.GhostPlatformBlock
-import g_mungus.vlib.item.TestingStickItem
+import g_mungus.vlib.item.AssemblyStickItem
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
@@ -22,7 +22,7 @@ object VLibFabric: ModInitializer {
         ValkyrienSkiesModFabric().onInitialize()
 
         VLib.GHOST_BLOCK = registerBlock("ghost_block", GhostPlatformBlock())
-        VLib.TESTING_STICK = registerItem("testing_stick", TestingStickItem())
+        VLib.ASSEMBLY_STICK = registerItem("assembly_stick", AssemblyStickItem())
 
         init()
     }
