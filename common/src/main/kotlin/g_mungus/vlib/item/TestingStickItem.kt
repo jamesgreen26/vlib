@@ -1,14 +1,13 @@
 package g_mungus.vlib.item
 
-import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.api.VLibGameUtils
-import g_mungus.vlib.util.findConnectedBlocks
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Item
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.context.UseOnContext
 
-class TestingStickItem(properties: Properties) : Item(properties) {
+class TestingStickItem : Item(Properties().rarity(Rarity.EPIC)) {
 
     override fun useOn(context: UseOnContext): InteractionResult {
 

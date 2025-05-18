@@ -1,5 +1,6 @@
 package g_mungus.vlib.api
 
+import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.VLib.MOD_ID
 import g_mungus.vlib.structure.StructureManager
@@ -57,7 +58,7 @@ object VLibGameUtils {
                         level.removeBlockEntity(pos)
                     }
 
-                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 0)
+                    level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
                 }
                 CoroutineScope(Dispatchers.Default).launch {
                     var ship: Ship? = null
