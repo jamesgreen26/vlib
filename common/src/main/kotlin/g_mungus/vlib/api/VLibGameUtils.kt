@@ -36,8 +36,8 @@ object VLibGameUtils {
      * @return A completion stage which completes with the created ship when assembly is finished, or null if the blockPos specified was in the shipyard already.
      **/
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship>? {
-        if (level.isBlockInShipyard(blockPos)) return null
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship> {
+        if (level.isBlockInShipyard(blockPos)) return CompletableFuture.failedFuture(IllegalArgumentException("Ship is already assembled"))
 
         val future = CompletableFuture<Ship>()
         val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
@@ -45,6 +45,10 @@ object VLibGameUtils {
 
         (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos).whenComplete { t, u ->
             t?.let {
+                if (StructureManager.blacklist.keys().toList().contains(t.second)) {
+                    future.completeExceptionally(IllegalStateException("Position is on assembly cooldown"))
+                    return@whenComplete
+                }
                 template.author = StructureManager.READY + "%" + id
                 template.placeInWorld(level, t.second, t.second, StructurePlaceSettings(), RandomSource.create(), 2)
                 it.first.forEach { pos ->
