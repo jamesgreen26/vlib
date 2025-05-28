@@ -5,6 +5,7 @@
   "mixins": [
     "shipAssembly.PaletteInvoker",
     "shipAssembly.StructureTemplateMixin",
+    "shipPlacement.BlockPosArgumentMixin",
     "shipPlacement.ServerLevelMixin",
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin"
