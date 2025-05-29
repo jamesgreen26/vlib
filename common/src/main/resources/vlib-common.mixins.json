@@ -6,7 +6,7 @@
     "shipAssembly.PaletteInvoker",
     "shipAssembly.StructureTemplateMixin",
     "shipPlacement.BlockPosArgumentMixin",
-    "shipPlacement.ServerLevelMixin",
+    "shipPlacement.MinecraftServerMixin",
     "shipPlacement.StructureStartMixin",
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin"

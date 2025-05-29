@@ -6,12 +6,14 @@ import g_mungus.vlib.util.CanRemoveTemplate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.minecraft.core.BlockPos
+import net.minecraft.server.MinecraftServer
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.joml.Vector3d
 import org.joml.Vector3i
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
@@ -27,7 +29,7 @@ object StructureManager {
 
     val assemblyQueue: Queue<TemplateAssemblyData> = ConcurrentLinkedQueue()
 
-    val blacklist: ConcurrentHashMap<BlockPos, Pair<Long, String>> = ConcurrentHashMap()
+    val blacklist: ConcurrentHashMap<BlockPos, Long> = ConcurrentHashMap()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -47,39 +49,55 @@ object StructureManager {
     }
 
     fun enqueueTemplateForAssembly(data: TemplateAssemblyData) {
+        if (Thread.currentThread() != ValkyrienSkiesMod.currentServer?.runningThread) {
+            val now = Date().time
+
+            if (blacklist.keys.contains(data.pos)) return
+            blacklist[data.pos] = now
+        }
         assemblyQueue.add(data)
         LOGGER.info("enqueueing template at ${data.pos}")
     }
 
     fun createShipFromTemplate(data: TemplateAssemblyData) {
         var pos = data.pos
-        val now = Date().time
-        val id = UUID.randomUUID().toString()
-
-        if (blacklist.keys.contains(data.pos)) return
-        blacklist[data.pos] = now to id
 
         if (data.level.isOutsideBuildHeight(data.pos)) {
             pos = BlockPos(pos.x, 0, pos.z)
         }
 
-        if (blacklist[data.pos]?.second != id) return
-
         val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
         ship.isStatic = true
-        val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(pos.y)
+        val centreOfShip =
+            ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(pos.y)
 
         val structurePlaceSettings = StructurePlaceSettings()
         structurePlaceSettings.setRotationPivot(centreOfShip)
 
-        data.template.placeInWorld(data.level, centreOfShip, centreOfShip, structurePlaceSettings, RandomSource.create(), 2)
+        data.template.placeInWorld(
+            data.level,
+            centreOfShip,
+            centreOfShip,
+            structurePlaceSettings,
+            RandomSource.create(),
+            2
+        )
 
         if (ship.inertiaData.mass < 0.001) {
             data.level.shipObjectWorld.deleteShip(ship)
             LOGGER.warn("Deleting ship with id: ${ship.id} because it has mass 0")
         } else {
             if (pos != data.pos) {
-                data.level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(data.pos.x.toDouble(), data.pos.y.toDouble(), data.pos.z.toDouble())))
+                data.level.shipObjectWorld.teleportShip(
+                    ship,
+                    ShipTeleportDataImpl(
+                        newPos = Vector3d(
+                            data.pos.x.toDouble(),
+                            data.pos.y.toDouble(),
+                            data.pos.z.toDouble()
+                        )
+                    )
+                )
             }
 
             data.callback(ship, centreOfShip)

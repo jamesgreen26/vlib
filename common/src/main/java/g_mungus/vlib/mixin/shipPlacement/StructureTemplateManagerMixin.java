@@ -41,7 +41,6 @@ public abstract class StructureTemplateManagerMixin implements CanRemoveTemplate
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
             if (id.getPath().startsWith(structureSettings.getFolder())) {
                 template.get().setAuthor(StructureManager.READY + "%" + id);
-                VLib.INSTANCE.getLOGGER().info("prepping template with author: {}", template.get().getAuthor());
             }
         }
         cir.setReturnValue(template);
