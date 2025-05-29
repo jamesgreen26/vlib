@@ -7,6 +7,7 @@
     "shipAssembly.StructureTemplateMixin",
     "shipPlacement.BlockPosArgumentMixin",
     "shipPlacement.ServerLevelMixin",
+    "shipPlacement.StructureStartMixin",
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin"
   ],
