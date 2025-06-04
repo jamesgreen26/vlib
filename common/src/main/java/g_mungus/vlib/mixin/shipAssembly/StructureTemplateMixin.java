@@ -7,6 +7,7 @@ import kotlin.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -47,9 +48,9 @@ public abstract class StructureTemplateMixin implements CanFillByConnectivity {
 
     @Override
     @Unique
-    public CompletionStage<Pair<Set<BlockPos>, BlockPos>> vlib$fillByConnectivity(Level level, BlockPos pos) {
+    public CompletionStage<Pair<Set<BlockPos>, BlockPos>> vlib$fillByConnectivity(Level level, BlockPos pos, List<Block> blackList) {
         CompletableFuture<Pair<Set<BlockPos>, BlockPos>> output = new CompletableFuture<>();
-        findConnectedBlocks(level, pos).whenComplete((res, throwable) -> {
+        findConnectedBlocks(level, pos, blackList).whenComplete((res, throwable) -> {
             if (throwable != null) {
                 output.completeExceptionally(throwable);
             } else {

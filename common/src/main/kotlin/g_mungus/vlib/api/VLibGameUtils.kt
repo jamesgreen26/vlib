@@ -37,14 +37,17 @@ object VLibGameUtils {
      * @return A completion stage which completes with the created ship when assembly is finished, or null if the blockPos specified was in the shipyard already.
      **/
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship> {
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship> =
+        assembleByConnectivity(level, blockPos, listOf())
+
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block>): CompletionStage<Ship> {
         if (level.isBlockInShipyard(blockPos)) return CompletableFuture.failedFuture(IllegalArgumentException("Ship is already assembled"))
 
         val future = CompletableFuture<Ship>()
         val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
         val template = level.structureManager.getOrCreate(id)
 
-        (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos).whenComplete { t, u ->
+        (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos, blackList).whenComplete { t, u ->
             t?.let {
                 if (StructureManager.blacklist.keys().toList().contains(t.second)) {
                     future.completeExceptionally(IllegalStateException("Position is on assembly cooldown"))
@@ -62,7 +65,7 @@ object VLibGameUtils {
                 }
                 CoroutineScope(Dispatchers.Default).launch {
                     var ship: Ship? = null
-                    while(ship == null) {
+                    while (ship == null) {
                         delay(100)
                         ship = level.getShipsIntersecting(AABB(blockPos)).toList().firstOrNull()
                     }

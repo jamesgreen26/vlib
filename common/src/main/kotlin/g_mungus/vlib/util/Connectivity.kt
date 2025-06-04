@@ -1,9 +1,11 @@
 package g_mungus.vlib.util
 
+import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.MAX_RECURSION
 import kotlinx.coroutines.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
@@ -40,15 +42,20 @@ val STRUCTURE_OFFSETS = listOf(
     BlockPos(-1, 0, -1)
 )
 
-val defaultValidBlock: (BlockState) -> Boolean = {
-    !it.isAir
-}
+private val defaultBlackList = listOf(Blocks.AIR, Blocks.CAVE_AIR, VLib.GHOST_BLOCK)
+
+fun isBlockStateValid(state: BlockState, blacklist: List<Block>) = blacklist.all { !state.`is`(it) }
 
 fun findConnectedBlocks(
     level: Level,
     start: BlockPos,
+    blackList: List<Block>
 ): CompletionStage<Triple<Set<BlockPos>, Vector3ic, Vector3ic>> =
     CompletableFuture<Triple<Set<BlockPos>, Vector3ic, Vector3ic>>().also { future ->
+        val _blackList = mutableListOf<Block>().apply {
+            addAll(defaultBlackList)
+            addAll(blackList)
+        }
         val result = mutableSetOf<BlockPos>()
         val visited = mutableSetOf<BlockPos>()
         val queue: ArrayDeque<BlockPos> = ArrayDeque()
@@ -56,7 +63,7 @@ fun findConnectedBlocks(
         val min = Vector3i(Int.MAX_VALUE)
         val max = Vector3i(Int.MIN_VALUE)
 
-        if (!defaultValidBlock(level.getBlockState(start))) future.complete(Triple.of(emptySet(), Vector3i(), Vector3i()))
+        if (!isBlockStateValid(level.getBlockState(start), _blackList)) future.complete(Triple.of(emptySet(), Vector3i(), Vector3i()))
 
         queue.add(start)
         visited.add(start)
@@ -86,7 +93,7 @@ fun findConnectedBlocks(
                 if (blockState.`is`(Blocks.BEDROCK)) {
                     future.completeExceptionally(RuntimeException("Connected with bedrock"))
                     break
-                } else if (defaultValidBlock(blockState)) {
+                } else if (isBlockStateValid(blockState, _blackList)) {
                     queue.add(neighbor)
                 }
             }
