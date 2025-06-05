@@ -3,6 +3,7 @@
   "package": "g_mungus.vlib.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "bugfix.EntityShipCollisionUtilsMixin",
     "shipAssembly.PaletteInvoker",
     "shipAssembly.StructureTemplateMixin",
     "shipPlacement.BlockPosArgumentMixin",
