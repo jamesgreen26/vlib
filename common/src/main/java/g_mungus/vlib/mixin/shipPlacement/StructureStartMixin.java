@@ -27,48 +27,48 @@ import static net.minecraft.world.level.levelgen.structure.pieces.StructurePiece
 @Mixin(StructureStart.class)
 public class StructureStartMixin {
 
-    @Final
-    @Shadow
-    private PiecesContainer pieceContainer;
-
-    @Final
-    @Shadow
-    private Structure structure;
-
-    @Inject(
-            method = "placeInChunk",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void onPlaceInChunk(
-            WorldGenLevel worldGenLevel,
-            StructureManager structureManager,
-            ChunkGenerator chunkGenerator,
-            RandomSource randomSource,
-            BoundingBox boundingBox,
-            ChunkPos chunkPos,
-            CallbackInfo ci
-    ) {
-        List<StructurePiece> list = this.pieceContainer.pieces();
-
-        if (
-                list.stream().anyMatch(structurePiece -> structurePiece.getType() == JIGSAW)
-                        && this.structure.step() == GenerationStep.Decoration.RAW_GENERATION
-        ) {
-
-
-            if (!list.isEmpty()) {
-                BoundingBox boundingBox2 = (list.get(0)).getBoundingBox();
-                BlockPos blockPos = boundingBox2.getCenter();
-                BlockPos blockPos2 = new BlockPos(blockPos.getX(), boundingBox2.minY(), blockPos.getZ());
-
-                for (StructurePiece structurePiece : list) {
-                    structurePiece.postProcess(worldGenLevel, structureManager, chunkGenerator, randomSource, boundingBox, chunkPos, blockPos2);
-                }
-
-                this.structure.afterPlace(worldGenLevel, structureManager, chunkGenerator, randomSource, boundingBox, chunkPos, this.pieceContainer);
-            }
-            ci.cancel();
-        }
-    }
+//    @Final
+//    @Shadow
+//    private PiecesContainer pieceContainer;
+//
+//    @Final
+//    @Shadow
+//    private Structure structure;
+//
+//    @Inject(
+//            method = "placeInChunk",
+//            at = @At("HEAD"),
+//            cancellable = true
+//    )
+//    private void onPlaceInChunk(
+//            WorldGenLevel worldGenLevel,
+//            StructureManager structureManager,
+//            ChunkGenerator chunkGenerator,
+//            RandomSource randomSource,
+//            BoundingBox boundingBox,
+//            ChunkPos chunkPos,
+//            CallbackInfo ci
+//    ) {
+//        List<StructurePiece> list = this.pieceContainer.pieces();
+//
+//        if (
+//                list.stream().anyMatch(structurePiece -> structurePiece.getType() == JIGSAW)
+//                        && this.structure.step() == GenerationStep.Decoration.RAW_GENERATION
+//        ) {
+//
+//
+//            if (!list.isEmpty()) {
+//                BoundingBox boundingBox2 = (list.get(0)).getBoundingBox();
+//                BlockPos blockPos = boundingBox2.getCenter();
+//                BlockPos blockPos2 = new BlockPos(blockPos.getX(), boundingBox2.minY(), blockPos.getZ());
+//
+//                for (StructurePiece structurePiece : list) {
+//                    structurePiece.postProcess(worldGenLevel, structureManager, chunkGenerator, randomSource, boundingBox, chunkPos, blockPos2);
+//                }
+//
+//                this.structure.afterPlace(worldGenLevel, structureManager, chunkGenerator, randomSource, boundingBox, chunkPos, this.pieceContainer);
+//            }
+//            ci.cancel();
+//        }
+//    }
 }
