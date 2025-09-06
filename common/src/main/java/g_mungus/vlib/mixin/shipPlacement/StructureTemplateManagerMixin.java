@@ -1,7 +1,6 @@
 package g_mungus.vlib.mixin.shipPlacement;
 
 
-import g_mungus.vlib.VLib;
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.util.CanRemoveTemplate;
 import g_mungus.vlib.structure.StructureManager;
@@ -39,7 +38,15 @@ public abstract class StructureTemplateManagerMixin implements CanRemoveTemplate
 
         if (template.isPresent() && !template.get().getAuthor().equals(StructureManager.DIRTY) && StructureManager.INSTANCE.getModifiedStructures().containsKey(id.getNamespace())) {
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
-            if (id.getPath().startsWith(structureSettings.getFolder())) {
+            boolean shouldAssemble = false;
+            for (String folder : structureSettings.getFolders()) {
+                if (id.getPath().startsWith(folder)) {
+                    shouldAssemble = true;
+                    break;
+                }
+            }
+
+            if (shouldAssemble) {
                 template.get().setAuthor(StructureManager.READY + "%" + id);
             }
         }

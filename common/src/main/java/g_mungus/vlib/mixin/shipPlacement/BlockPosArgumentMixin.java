@@ -35,8 +35,11 @@ public class BlockPosArgumentMixin {
         try {
             ResourceLocation id = ResourceLocationArgument.getId(commandContext, "template");
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
-            if (id.getPath().startsWith(structureSettings.getFolder())) {
-                shouldBypassHeightCheck = true;
+            for (String folder : structureSettings.getFolders()) {
+                if (id.getPath().startsWith(folder)) {
+                    shouldBypassHeightCheck = true;
+                    break;
+                }
             }
         } catch (Exception e) {
             // command does not contain a template id, so we can ignore it
