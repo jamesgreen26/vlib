@@ -42,9 +42,7 @@ class TemplateAssemblyData (
         val i = location.lastIndexOf('/')
         return if (i >= 0) {
             location.substring(i + 1)
-        } else if (location.isNotBlank()) {
-            location
-        } else null
+        } else location.ifBlank { null }
     }
 }
 

@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import com.fasterxml.jackson.module.kotlin.readValue
+import g_mungus.vlib.dimension.DimensionSettingsManager
 import g_mungus.vlib.structure.StructureManager
 
 import java.io.InputStream
@@ -42,7 +43,30 @@ object SynchronousResourceReloadListener: SimpleSynchronousResourceReloadListene
             }
         }
 
-        LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString())
+        resourceManager.listResources("dimension-settings", predicate).forEach { (resourceLocation, resource) ->
+            val settings = try {
+                DimensionSettings.readJson(resource.open())
+            } catch (e: Exception) {
+                LOGGER.error("Error occurred while loading resource json: $resourceLocation", e)
+                null
+            }
+
+            val location = ResourceLocation.tryParse(
+                resourceLocation.path
+                    .drop(19)
+                    .replace(".json", "")
+                    .replace("/", ":")
+            )
+
+            if (settings != null && location != null) {
+
+                DimensionSettingsManager.addSettings(location, settings)
+            } else {
+                LOGGER.warn("Skipping resource at $resourceLocation because it could not be parsed.")
+            }
+        }
+
+        LOGGER.info("Finished reload. Modified structure data:\n" + StructureManager.getModifiedStructures().toString() + "\nModified dimensions:\n" + DimensionSettingsManager.getModifiedDimensions().toString())
     }
 
 

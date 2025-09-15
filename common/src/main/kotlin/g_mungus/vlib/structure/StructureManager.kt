@@ -2,11 +2,9 @@ package g_mungus.vlib.structure
 
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
+import g_mungus.vlib.dimension.DimensionSettingsManager
 import g_mungus.vlib.util.CanRemoveTemplate
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import net.minecraft.core.BlockPos
-import net.minecraft.server.MinecraftServer
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
@@ -66,13 +64,16 @@ object StructureManager {
             pos = BlockPos(pos.x, 0, pos.z)
         }
 
-        val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, 1.0, data.level.dimensionId)
+        val dimensionSettings = DimensionSettingsManager.getSettingsForLevel(data.level.dimensionId)
+
+        val ship = data.level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, dimensionSettings.shipScale, data.level.dimensionId)
         ship.isStatic = true
+
         val centreOfShip =
             ship.chunkClaim.getCenterBlockCoordinates(data.level.yRange, Vector3i()).toBlockPos().atY(pos.y)
 
         val structurePlaceSettings = StructurePlaceSettings()
-        structurePlaceSettings.setRotationPivot(centreOfShip)
+        structurePlaceSettings.rotationPivot = centreOfShip
 
         data.template.placeInWorld(
             data.level,
