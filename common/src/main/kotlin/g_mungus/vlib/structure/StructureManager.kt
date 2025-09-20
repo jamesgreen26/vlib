@@ -1,5 +1,6 @@
 package g_mungus.vlib.structure
 
+import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.data.StructureSettings
 import g_mungus.vlib.dimension.DimensionSettingsManager
@@ -11,7 +12,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import org.joml.Vector3d
 import org.joml.Vector3i
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
@@ -20,6 +20,7 @@ import org.valkyrienskies.mod.common.yRange
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.locks.ReentrantLock
 
 object StructureManager {
     @Volatile
@@ -28,6 +29,7 @@ object StructureManager {
     val assemblyQueue: Queue<TemplateAssemblyData> = ConcurrentLinkedQueue()
 
     val blacklist: ConcurrentHashMap<BlockPos, Long> = ConcurrentHashMap()
+    private val blacklistMutex = ReentrantLock()
 
     const val READY = "vlib\$ready"
     const val DIRTY = "vlib\$dirty"
@@ -47,11 +49,15 @@ object StructureManager {
     }
 
     fun enqueueTemplateForAssembly(data: TemplateAssemblyData) {
-        if (Thread.currentThread() != ValkyrienSkiesMod.currentServer?.runningThread) {
+        if (VLib.isDuringWorldGen) {
             val now = Date().time
 
-            if (blacklist.keys.contains(data.pos)) return
-            blacklist[data.pos] = now
+            blacklistMutex.lock()
+            try {
+                if (blacklist.putIfAbsent(data.pos, now) != null) return
+            } finally {
+                blacklistMutex.unlock()
+            }
         }
         assemblyQueue.add(data)
         LOGGER.info("enqueueing template at ${data.pos}")
@@ -60,7 +66,7 @@ object StructureManager {
     fun createShipFromTemplate(data: TemplateAssemblyData) {
         var pos = data.pos
 
-        if (data.level.isOutsideBuildHeight(data.pos)) {
+        if (data.level.isOutsideBuildHeight(pos)) {
             pos = BlockPos(pos.x, 0, pos.z)
         }
 

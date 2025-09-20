@@ -38,6 +38,8 @@ data class StructureSettings(
     val folders: List<String>,
     val rename: Boolean?,
     val static: Boolean?,
+    val randomYRange: Int? = null,
+    val randomRotation: Boolean = false
 ) {
     companion object {
         fun readJson(inputStream: InputStream): StructureSettings? {

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Block
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.valkyrienskies.core.impl.hooks.VSEvents
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 
 
 object VLib {
@@ -27,4 +28,7 @@ object VLib {
 
     @JvmStatic
     fun initClient() { }
+
+    @JvmStatic
+    val isDuringWorldGen get() = Thread.currentThread() != ValkyrienSkiesMod.currentServer?.runningThread
 }

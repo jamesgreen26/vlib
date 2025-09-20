@@ -1,5 +1,6 @@
 package g_mungus.vlib.mixin.shipPlacement;
 
+import g_mungus.vlib.VLib;
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.structure.StructureManager;
 import g_mungus.vlib.structure.TemplateAssemblyData;
@@ -35,15 +36,23 @@ public abstract class StructureTemplateMixin {
 
         if (this.author.startsWith(StructureManager.READY)) {
 
-            ResourceLocation id = new ResourceLocation(Objects.requireNonNull(vlib$getNameSpace(this.author, '%')));
+            ResourceLocation id = new ResourceLocation(Objects.requireNonNull(vlib$getNameSpace(this.author)));
 
             StructureSettings structureSettings = StructureManager.INSTANCE.getModifiedStructures().get(id.getNamespace());
+
+            BlockPos adjustedPos;
+
+            if (structureSettings.getRandomYRange() != null && VLib.isDuringWorldGen()) {
+                adjustedPos = blockPos.atY((int) (((Math.random() * 2) - 1) * structureSettings.getRandomYRange()));
+            } else {
+                adjustedPos = blockPos;
+            }
 
             TemplateAssemblyData data = new TemplateAssemblyData(
                 (StructureTemplate) (Object) this,
                 id,
                 serverLevelAccessor.getLevel(),
-                blockPos,
+                adjustedPos,
                 structureSettings
             );
 
@@ -57,8 +66,8 @@ public abstract class StructureTemplateMixin {
     }
 
     @Unique
-    private static String vlib$getNameSpace(String location, char separator) {
-        int i = location.indexOf(separator);
+    private static String vlib$getNameSpace(String location) {
+        int i = location.indexOf('%');
         if (i >= 0) {
             return location.substring(i + 1);
         }
