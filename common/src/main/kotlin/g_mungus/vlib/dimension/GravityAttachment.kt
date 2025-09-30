@@ -25,7 +25,7 @@ class GravityAttachment(val dimension: String) : ShipForcesInducer {
 
         val dimensionSettings = DimensionSettingsManager.getSettingsForLevel(dimension)
 
-        if (dimensionSettings.gravity != 1.0) {
+        if (dimensionSettings.gravity != 1.0 && dimensionSettings.shouldApplyGravity) {
             val gravity = (1 - dimensionSettings.gravity) * 10 * (physShip as PhysShipImpl).inertia.shipMass
 
             try {

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream
 
 
-data class DimensionSettings(val shipScale: Double, val gravity: Double) {
+data class DimensionSettings(val shipScale: Double, val gravity: Double, val shouldApplyGravity: Boolean = true) {
 
     companion object {
         private val objectMapper = jacksonObjectMapper()
