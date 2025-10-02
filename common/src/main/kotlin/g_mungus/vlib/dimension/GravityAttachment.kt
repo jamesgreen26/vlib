@@ -6,7 +6,9 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 
-class GravityAttachment(val dimension: String) : ShipForcesInducer {
+class GravityAttachment(dimension: String) : ShipForcesInducer {
+    var dimension = dimension
+        private set
 
     companion object {
 
@@ -15,6 +17,8 @@ class GravityAttachment(val dimension: String) : ShipForcesInducer {
             if (attachment == null) {
                 attachment = GravityAttachment(ship.chunkClaimDimension)
                 ship.saveAttachment(GravityAttachment::class.java, attachment)
+            } else {
+                attachment.dimension = ship.chunkClaimDimension
             }
             return attachment
         }
