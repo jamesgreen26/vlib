@@ -97,6 +97,20 @@ public abstract class MixinGameRenderer {
 
         final ClientShip clientShip = (ClientShip) ship;
 
+        final boolean isFirstPerson = minecraft.options.getCameraType().isFirstPerson();
+
+        if (!isFirstPerson) {
+            ((IVSCamera) camera).setupWithShipMounted(
+                    this.minecraft.level,
+                    this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity(),
+                    !this.minecraft.options.getCameraType().isFirstPerson(),
+                    this.minecraft.options.getCameraType().isMirrored(),
+                    partialTicks,
+                    clientShip,
+                    clientShip.getRenderTransform().getWorldToShip().transformPosition(pos)
+            );
+        }
+
         // Apply the ship render transform to [matrixStack]
         final Quaternionf invShipRenderRotation = new Quaternionf(
                 clientShip.getRenderTransform().getShipToWorldRotation().conjugate(new Quaterniond())
@@ -112,12 +126,10 @@ public abstract class MixinGameRenderer {
 
         final double fov = this.getFov(camera, partialTicks, true);
 
-        if (minecraft.options.getCameraType().isFirstPerson()) {
-            //fixme rotate vec3 position around player position to correct position
+        if (isFirstPerson) {
             original.call(instance, matrixStack, vec3,
                     this.getProjectionMatrix(Math.max(fov, this.minecraft.options.fov().get())));
         } else {
-            //fixme position is wrong
             original.call(instance, matrixStack, camera.getPosition(),
                     this.getProjectionMatrix(Math.max(fov, this.minecraft.options.fov().get())));
         }
