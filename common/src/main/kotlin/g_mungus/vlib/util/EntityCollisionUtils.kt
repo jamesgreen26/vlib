@@ -88,14 +88,6 @@ fun getShipPolygonsCollidingWithEntityWithRotation(
             (entityBoxWithMovement.minZ + entityBoxWithMovement.maxZ) / 2.0
         )
 
-        println("=== COLLISION DEBUG ===")
-        println("entityBoxWithMovement: $entityBoxWithMovement")
-        println("boxCenterWorld: $boxCenterWorld")
-        println("shipTransform.worldToShip:")
-        println(shipTransform.worldToShip)
-        println("shipTransform.shipToWorld:")
-        println(shipTransform.shipToWorld)
-        println("shipTransform.shipToWorldRotation: ${shipTransform.shipToWorldRotation}")
 
         // We need to: rotate the entity box to align with ship axes, THEN apply worldToShip
         // This means: worldToShip * rotateAroundCenter(shipToWorldRotation)
@@ -108,8 +100,6 @@ fun getShipPolygonsCollidingWithEntityWithRotation(
                     .translate(-boxCenterWorld.x, -boxCenterWorld.y, -boxCenterWorld.z)
             )
 
-        println("modifiedWorldToShip:")
-        println(modifiedWorldToShip)
 
         val entityPolyInShipCoordinates: ConvexPolygonc = collider.createPolygonFromAABB(
             entityBoxWithMovement.toJOML(),
@@ -117,11 +107,9 @@ fun getShipPolygonsCollidingWithEntityWithRotation(
         )
         val entityBoundingBoxInShipCoordinates: AABBdc = entityPolyInShipCoordinates.getEnclosingAABB(AABBd())
 
-        println("entityBoundingBoxInShipCoordinates: $entityBoundingBoxInShipCoordinates")
 
         if (BugFixUtil.isCollisionBoxToBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
             // Box too large, skip it
-            println("Box too large, skipping")
             continue
         }
         val shipBlockCollisionStream =
@@ -136,8 +124,6 @@ fun getShipPolygonsCollidingWithEntityWithRotation(
             .translate(-boxCenterWorld.x, -boxCenterWorld.y, -boxCenterWorld.z)
             .mul(shipTransform.shipToWorld)
 
-        println("modifiedShipToWorld:")
-        println(modifiedShipToWorld)
 
         shipBlockCollisionStream.forEach { voxelShape: VoxelShape ->
             voxelShape.forAllBoxes { minX, minY, minZ, maxX, maxY, maxZ ->
