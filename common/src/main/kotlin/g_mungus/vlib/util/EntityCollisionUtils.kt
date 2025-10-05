@@ -36,33 +36,121 @@ fun adjustEntityMovementForShipCollisions(
     val inflation = if (entity is Player) 0.5 else 0.1
     val stepHeight: Double = entity?.maxUpStep()?.toDouble() ?: 0.0
     // Add [max(stepHeight - inflation, 0.0)] to search for polygons we might collide with while stepping
-    val collidingShipPolygons =
-        getShipPolygonsCollidingWithEntity(
+    val collidingShipPolygonsWithRotation = getShipPolygonsCollidingWithEntityWithRotation(
             entity, Vec3(movement.x(), movement.y() + max(stepHeight - inflation, 0.0), movement.z()),
             entityBoundingBox.inflate(inflation), world, collider
         )
 
-    if (collidingShipPolygons.isEmpty()) {
+    if (collidingShipPolygonsWithRotation.isEmpty()) {
         return movement
     }
 
+    val shipRotation = collidingShipPolygonsWithRotation.first().second
+    val shipRotationInverse = org.joml.Quaterniond(shipRotation).conjugate()
+
+    val rotatedMovement = shipRotationInverse.transform(movement.toJOML())
+
+
     val (newMovement, shipCollidingWith) = collider.adjustEntityMovementForPolygonCollisions(
-        movement.toJOML(), entityBoundingBox.toJOML(), stepHeight, collidingShipPolygons
+        rotatedMovement, entityBoundingBox.toJOML(), stepHeight, collidingShipPolygonsWithRotation.map { it.first }
     )
+
+    // Rotate movement back to world space
+    val finalMovement = shipRotation.transform(Vector3d(newMovement))
+
     if (entity != null) {
         if (shipCollidingWith != null) {
             // Update the [IEntity.lastShipStoodOn]
             (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn = shipCollidingWith
+        }
+    }
+    return finalMovement.toMinecraft()
+}
 
-            if (entity is Player) {
-                val shipToWorldRotation: Quaterniondc? =
-                    world.shipObjectWorld.loadedShips.getById(shipCollidingWith)?.transform?.shipToWorldRotation
-                if (shipToWorldRotation != null)
-                    return collider.adjustEntityMovementForPolygonCollisions(movement.toJOML(), shrinkAABBXZ(entityBoundingBox.toJOML(), shipToWorldRotation), stepHeight, collidingShipPolygons).first.toMinecraft()
+fun getShipPolygonsCollidingWithEntityWithRotation(
+    entity: Entity?,
+    movement: Vec3,
+    entityBoundingBox: AABB,
+    world: Level,
+    collider: EntityPolygonCollider
+): List<Pair<ConvexPolygonc, org.joml.Quaterniond>> {
+    val entityBoxWithMovement = entityBoundingBox.expandTowards(movement)
+    val collidingPolygons: MutableList<Pair<ConvexPolygonc, org.joml.Quaterniond>> = ArrayList()
+    val entityBoundingBoxExtended = entityBoundingBox.toJOML().extend(movement.toJOML())
+    for (shipObject in world.shipObjectWorld.loadedShips.getIntersecting(entityBoundingBoxExtended)) {
+        val shipTransform = shipObject.transform
+        val shipRotation = org.joml.Quaterniond(shipTransform.shipToWorldRotation)
+
+        // Calculate the center of the entity box in world space
+        val boxCenterWorld = Vector3d(
+            (entityBoxWithMovement.minX + entityBoxWithMovement.maxX) / 2.0,
+            (entityBoxWithMovement.minY + entityBoxWithMovement.maxY) / 2.0,
+            (entityBoxWithMovement.minZ + entityBoxWithMovement.maxZ) / 2.0
+        )
+
+        println("=== COLLISION DEBUG ===")
+        println("entityBoxWithMovement: $entityBoxWithMovement")
+        println("boxCenterWorld: $boxCenterWorld")
+        println("shipTransform.worldToShip:")
+        println(shipTransform.worldToShip)
+        println("shipTransform.shipToWorld:")
+        println(shipTransform.shipToWorld)
+        println("shipTransform.shipToWorldRotation: ${shipTransform.shipToWorldRotation}")
+
+        // We need to: rotate the entity box to align with ship axes, THEN apply worldToShip
+        // This means: worldToShip * rotateAroundCenter(shipToWorldRotation)
+        // Which is: worldToShip * translate(center) * rotate(shipToWorldRotation) * translate(-center)
+        val modifiedWorldToShip = org.joml.Matrix4d(shipTransform.worldToShip)
+            .mul(
+                org.joml.Matrix4d()
+                    .translate(boxCenterWorld)
+                    .rotate(shipTransform.shipToWorldRotation)
+                    .translate(-boxCenterWorld.x, -boxCenterWorld.y, -boxCenterWorld.z)
+            )
+
+        println("modifiedWorldToShip:")
+        println(modifiedWorldToShip)
+
+        val entityPolyInShipCoordinates: ConvexPolygonc = collider.createPolygonFromAABB(
+            entityBoxWithMovement.toJOML(),
+            modifiedWorldToShip
+        )
+        val entityBoundingBoxInShipCoordinates: AABBdc = entityPolyInShipCoordinates.getEnclosingAABB(AABBd())
+
+        println("entityBoundingBoxInShipCoordinates: $entityBoundingBoxInShipCoordinates")
+
+        if (BugFixUtil.isCollisionBoxToBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
+            // Box too large, skip it
+            println("Box too large, skipping")
+            continue
+        }
+        val shipBlockCollisionStream =
+            world.getBlockCollisions(entity, entityBoundingBoxInShipCoordinates.toMinecraft())
+
+        // For shipToWorld, we need the inverse: rotate back to world alignment around the center
+        // This means: rotateAroundCenter(shipToWorldRotation^-1) * shipToWorld
+        val shipToWorldRotationInverse = org.joml.Quaterniond(shipTransform.shipToWorldRotation).conjugate()
+        val modifiedShipToWorld = org.joml.Matrix4d()
+            .translate(boxCenterWorld)
+            .rotate(shipToWorldRotationInverse)
+            .translate(-boxCenterWorld.x, -boxCenterWorld.y, -boxCenterWorld.z)
+            .mul(shipTransform.shipToWorld)
+
+        println("modifiedShipToWorld:")
+        println(modifiedShipToWorld)
+
+        shipBlockCollisionStream.forEach { voxelShape: VoxelShape ->
+            voxelShape.forAllBoxes { minX, minY, minZ, maxX, maxY, maxZ ->
+                val shipPolygon: ConvexPolygonc = createPolygonFromAABB(
+                    AABBd(minX, minY, minZ, maxX, maxY, maxZ),
+                    modifiedShipToWorld,
+                    shipObject.id
+                )
+                collidingPolygons.add(Pair(shipPolygon, shipRotation))
             }
         }
     }
-    return newMovement.toMinecraft()
+    return collidingPolygons
 }
 
 fun getShipPolygonsCollidingWithEntity(
@@ -72,35 +160,8 @@ fun getShipPolygonsCollidingWithEntity(
     world: Level,
     collider: EntityPolygonCollider
 ): List<ConvexPolygonc> {
-    val entityBoxWithMovement = entityBoundingBox.expandTowards(movement)
-    val collidingPolygons: MutableList<ConvexPolygonc> = ArrayList()
-    val entityBoundingBoxExtended = entityBoundingBox.toJOML().extend(movement.toJOML())
-    for (shipObject in world.shipObjectWorld.loadedShips.getIntersecting(entityBoundingBoxExtended)) {
-        val shipTransform = shipObject.transform
-        val entityPolyInShipCoordinates: ConvexPolygonc = collider.createPolygonFromAABB(
-            entityBoxWithMovement.toJOML(),
-            shipTransform.worldToShip
-        )
-        var entityBoundingBoxInShipCoordinates: AABBdc = entityPolyInShipCoordinates.getEnclosingAABB(AABBd())
-        if (entity is Player) entityBoundingBoxInShipCoordinates = shrinkAABBXZ(entityBoundingBoxInShipCoordinates, shipTransform.shipToWorldRotation)
-        if (BugFixUtil.isCollisionBoxToBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
-            // Box too large, skip it
-            continue
-        }
-        val shipBlockCollisionStream =
-            world.getBlockCollisions(entity, entityBoundingBoxInShipCoordinates.toMinecraft())
-        shipBlockCollisionStream.forEach { voxelShape: VoxelShape ->
-            voxelShape.forAllBoxes { minX, minY, minZ, maxX, maxY, maxZ ->
-                val shipPolygon: ConvexPolygonc = createPolygonFromAABB(
-                    AABBd(minX, minY, minZ, maxX, maxY, maxZ),
-                    shipTransform.shipToWorld,
-                    shipObject.id
-                )
-                collidingPolygons.add(shipPolygon)
-            }
-        }
-    }
-    return collidingPolygons
+    return getShipPolygonsCollidingWithEntityWithRotation(entity, movement, entityBoundingBox, world, collider)
+        .map { it.first }
 }
 
 private fun shrinkAABBXZ(aabb: AABBdc, shipToWorldRotation: Quaterniondc): AABBdc {
