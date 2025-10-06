@@ -64,7 +64,15 @@ fun adjustEntityMovementForShipCollisions(
             (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn = shipCollidingWith
         }
     }
-    return finalMovement.toMinecraft()
+
+
+    val finalMovementMC = finalMovement.toMinecraft()
+
+    return if (finalMovementMC.subtract(movement).length() > 0.00001) {
+        finalMovementMC
+    } else {
+        movement
+    }
 }
 
 fun getShipPolygonsCollidingWithEntityWithRotation(
