@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "bugfix.EntityShipCollisionUtilsMixin",
+    "massCalculator.BitsetDiscreteVoxelShapeAccessor",
+    "massCalculator.VoxelShapeAccessor",
     "shipAssembly.PaletteInvoker",
     "shipAssembly.StructureTemplateMixin",
     "shipPlacement.BlockPosArgumentMixin",

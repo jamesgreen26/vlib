@@ -1,0 +1,20 @@
+modLoader="lowcodefml"
+loaderVersion="[1,)"
+license="CC-0"
+showAsResourcePack=false
+showAsDataPack=true
+
+[[mods]]
+	modId="vlib_mass_synthetic"
+	version="1.0.0"
+	displayName="VLib Mass Synthetic Mod"
+	logoFile="pack.png"
+	authors=""
+	description="This mod was generated using VLib"
+
+	[[dependencies. vlib_mass_synthetic]]
+		modId="minecraft"
+		mandatory=true
+		versionRange="[1.20,)"
+		ordering="NONE"
+		side="BOTH"
