@@ -46,22 +46,39 @@ fun adjustEntityMovementForShipCollisions(
         return movement
     }
 
-    val (newMovement, shipCollidingWith) = collider.adjustEntityMovementForPolygonCollisions(
-        movement.toJOML(), entityBoundingBox.toJOML(), stepHeight, collidingShipPolygons
-    )
     if (entity != null) {
-        if (shipCollidingWith != null) {
-            // Update the [IEntity.lastShipStoodOn]
-            (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn = shipCollidingWith
+        val collidingWith = (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn
+
+
+        if (collidingWith != null) {
 
             if (entity is Player) {
                 val shipToWorldRotation: Quaterniondc? =
-                    world.shipObjectWorld.loadedShips.getById(shipCollidingWith)?.transform?.shipToWorldRotation
-                if (shipToWorldRotation != null)
-                    return collider.adjustEntityMovementForPolygonCollisions(movement.toJOML(), shrinkAABBXZ(entityBoundingBox.toJOML(), shipToWorldRotation), stepHeight, collidingShipPolygons).first.toMinecraft()
+                    world.shipObjectWorld.loadedShips.getById(collidingWith)?.transform?.shipToWorldRotation
+                if (shipToWorldRotation != null) {
+                    val (newMovement, shipCollidingWith) = collider.adjustEntityMovementForPolygonCollisions(
+                        movement.toJOML(),
+                        shrinkAABBXZ(entityBoundingBox.toJOML(), shipToWorldRotation),
+                        stepHeight,
+                        collidingShipPolygons
+                    )
+                    if (shipCollidingWith != null) {
+                        (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn = shipCollidingWith
+                    }
+                    return newMovement.toMinecraft()
+                }
             }
         }
     }
+
+    val (newMovement, shipCollidingWith) = collider.adjustEntityMovementForPolygonCollisions(
+        movement.toJOML(), entityBoundingBox.toJOML(), stepHeight, collidingShipPolygons
+    )
+
+    if (entity != null && shipCollidingWith != null) {
+        (entity as IEntityDraggingInformationProvider).draggingInformation.lastShipStoodOn = shipCollidingWith
+    }
+
     return newMovement.toMinecraft()
 }
 
