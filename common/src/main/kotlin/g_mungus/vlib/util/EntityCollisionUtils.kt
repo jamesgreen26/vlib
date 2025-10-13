@@ -1,5 +1,6 @@
 package g_mungus.vlib.util
 
+import g_mungus.vlib.dimension.DimensionSettingsManager
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
@@ -92,6 +93,10 @@ fun getShipPolygonsCollidingWithEntity(
     val entityBoxWithMovement = entityBoundingBox.expandTowards(movement)
     val collidingPolygons: MutableList<ConvexPolygonc> = ArrayList()
     val entityBoundingBoxExtended = entityBoundingBox.toJOML().extend(movement.toJOML())
+
+    val dimSettings = DimensionSettingsManager.getSettingsForLevel(world.dimension().location())
+    val shouldApplyFunkyFix = dimSettings.shipScale == 0.0625 && dimSettings.gravity == 0.0
+
     for (shipObject in world.shipObjectWorld.loadedShips.getIntersecting(entityBoundingBoxExtended)) {
         val shipTransform = shipObject.transform
         val entityPolyInShipCoordinates: ConvexPolygonc = collider.createPolygonFromAABB(
@@ -99,6 +104,23 @@ fun getShipPolygonsCollidingWithEntity(
             shipTransform.worldToShip
         )
         var entityBoundingBoxInShipCoordinates: AABBdc = entityPolyInShipCoordinates.getEnclosingAABB(AABBd())
+
+        if (shouldApplyFunkyFix) {
+            val worldAABB = entityBoxWithMovement.toJOML()
+            val originalHalfExtents = Vector3d(
+                (worldAABB.maxX - worldAABB.minX) / 2.0,
+                (worldAABB.maxY - worldAABB.minY) / 2.0,
+                (worldAABB.maxZ - worldAABB.minZ) / 2.0
+            )
+            originalHalfExtents.mul(2.0)
+
+            val center = Vector3d().apply { entityBoundingBoxInShipCoordinates.center(this) }
+            entityBoundingBoxInShipCoordinates = AABBd(
+                center.x - originalHalfExtents.x, center.y - originalHalfExtents.y, center.z - originalHalfExtents.z,
+                center.x + originalHalfExtents.x, center.y + originalHalfExtents.y, center.z + originalHalfExtents.z
+            )
+        }
+
         if (entity is Player) entityBoundingBoxInShipCoordinates = shrinkAABBXZ(entityBoundingBoxInShipCoordinates, shipTransform.shipToWorldRotation)
         if (BugFixUtil.isCollisionBoxToBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
             // Box too large, skip it

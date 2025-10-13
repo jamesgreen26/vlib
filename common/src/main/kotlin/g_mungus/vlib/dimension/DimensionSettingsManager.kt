@@ -21,4 +21,9 @@ object DimensionSettingsManager {
         val key = dimensionKey.drop(20)
         return modifiedDimensions[key] ?: DEFAULT
     }
+
+    fun getSettingsForLevel(dimension: ResourceLocation): DimensionSettings {
+        val key = dimension.toString()
+        return modifiedDimensions[key] ?: DEFAULT
+    }
 }

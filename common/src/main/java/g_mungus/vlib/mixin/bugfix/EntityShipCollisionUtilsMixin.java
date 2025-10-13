@@ -35,15 +35,6 @@ public class EntityShipCollisionUtilsMixin {
 
     @Inject(method = "adjustEntityMovementForShipCollisions", at = @At("HEAD"), cancellable = true, remap = false)
     private void adjustEntityMovementForShipCollisionsMixin(Entity entity, Vec3 movement, AABB entityBoundingBox, Level world, CallbackInfoReturnable<Vec3> cir) {
-        if (entity instanceof Player) {
-            cir.setReturnValue(EntityCollisionUtilsKt.adjustEntityMovementForShipCollisions(entity, movement, entityBoundingBox, world, collider));
-        }
-    }
-
-    @Inject(method = "getShipPolygonsCollidingWithEntity", at = @At("HEAD"), cancellable = true, remap = false)
-    private void getShipPolygonsCollidingWithEntityMixin(Entity entity, Vec3 movement, AABB entityBoundingBox, Level world, CallbackInfoReturnable<List<ConvexPolygonc>> cir) {
-        if (entity instanceof Player) {
-            cir.setReturnValue(EntityCollisionUtilsKt.getShipPolygonsCollidingWithEntity(entity, movement, entityBoundingBox, world, collider));
-        }
+        cir.setReturnValue(EntityCollisionUtilsKt.adjustEntityMovementForShipCollisions(entity, movement, entityBoundingBox, world, collider));
     }
 }
