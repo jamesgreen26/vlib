@@ -1,12 +1,13 @@
 package g_mungus.vlib.structure
 
 import g_mungus.vlib.VLib
+import g_mungus.vlib.api.HasSpecialSaveBehavior
 import g_mungus.vlib.data.StructureSettings
+import g_mungus.vlib.util.forEachBlock
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -41,6 +42,12 @@ class TemplateAssemblyData (
         val newPos: Vector3d = ship.transform.positionInWorld.add((ship as ServerShip).inertiaData.centerOfMassInShip, Vector3d()).sub(shipCenter.x.toDouble(), shipCenter.y.toDouble(), shipCenter.z.toDouble())
 
         level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = newPos, newRot = rot))
+
+        ship.forEachBlock {
+            val blockEntity = level.getBlockEntity(it)
+
+            if (blockEntity is HasSpecialSaveBehavior) blockEntity.executeAfterLoadingShip()
+        }
 
         if (structureSettings.static != true) {
             ship.isStatic = false

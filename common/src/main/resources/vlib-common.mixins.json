@@ -12,7 +12,8 @@
     "shipPlacement.MinecraftServerMixin",
     "shipPlacement.StructureStartMixin",
     "shipPlacement.StructureTemplateManagerMixin",
-    "shipPlacement.StructureTemplateMixin"
+    "shipPlacement.StructureTemplateMixin",
+    "specialSaveBehavior.StructureTemplateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
