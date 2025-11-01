@@ -13,6 +13,7 @@
     "shipPlacement.StructureStartMixin",
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin",
+    "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin"
   ],
   "injectors": {

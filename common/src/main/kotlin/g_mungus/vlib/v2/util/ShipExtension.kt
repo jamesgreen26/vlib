@@ -1,4 +1,4 @@
-package g_mungus.vlib.util
+package g_mungus.vlib.v2.util
 
 import net.minecraft.core.BlockPos
 import org.valkyrienskies.core.api.ships.Ship

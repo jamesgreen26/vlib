@@ -3,7 +3,7 @@ package g_mungus.vlib.structure
 import g_mungus.vlib.VLib
 import g_mungus.vlib.api.HasSpecialSaveBehavior
 import g_mungus.vlib.data.StructureSettings
-import g_mungus.vlib.util.forEachBlock
+import g_mungus.vlib.v2.util.forEachBlock
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -49,9 +49,9 @@ class TemplateAssemblyData (
             if (blockEntity is HasSpecialSaveBehavior) blockEntity.executeAfterLoadingShip()
         }
 
-        if (structureSettings.static != true) {
-            ship.isStatic = false
-        }
+//        if (structureSettings.static != true) {
+//            ship.isStatic = false
+//        }
     }
 
 

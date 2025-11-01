@@ -8,6 +8,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 
@@ -24,8 +25,10 @@ public abstract class StructureTemplateMixin {
     private BlockEntity redirectGetBlockEntity(Level level, BlockPos pos) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
-        if (VSGameUtilsKt.isBlockInShipyard(level, pos) && blockEntity instanceof HasSpecialSaveBehavior it) {
-            it.executeWhenSavingShip();
+        Ship ship = VSGameUtilsKt.getShipObjectManagingPos(level, pos);
+
+        if (ship != null && blockEntity instanceof HasSpecialSaveBehavior it) {
+            it.executeWhenSavingShip(ship.getId());
         }
 
         return blockEntity;

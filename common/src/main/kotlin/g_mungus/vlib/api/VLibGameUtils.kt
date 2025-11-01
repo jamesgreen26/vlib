@@ -149,6 +149,41 @@ object VLibGameUtils {
         }
     }
 
+
+    fun saveShipToTemplate2(
+        structurePath: String,
+        level: ServerLevel,
+        blockPos: BlockPos,
+        withEntities: Boolean,
+        deleteAfter: Boolean
+    ): Pair<ResourceLocation, BlockPos>? {
+
+        val ship = level.getShipManagingPos(blockPos) ?: let {
+            LOGGER.error("Could not find ship at pos: $blockPos in world: ${level.dimensionId}")
+            return null
+        }
+
+        val min = getMin(ship.shipAABB)
+
+        var resourceLocation: ResourceLocation
+
+        val structureTemplateManager = level.structureManager
+        structureTemplateManager.save(
+            getStructureTemplate(
+                structurePath,
+                level,
+                ship,
+                withEntities,
+                structureTemplateManager
+            ).second.also { resourceLocation = it }
+        )
+
+        if (deleteAfter) {
+            level.shipObjectWorld.deleteShip(ship)
+        }
+        return resourceLocation to min
+    }
+
     /**
      * Creates a structure template to represent the provided ship, without saving it to disk. Useful if you want to use the template immediately and discard it afterward.
      *
