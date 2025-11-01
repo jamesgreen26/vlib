@@ -4,7 +4,10 @@ import g_mungus.vlib.VLib;
 import g_mungus.vlib.api.HasSpecialSaveBehavior;
 import g_mungus.vlib.api.VLibGameUtils;
 import g_mungus.vlib.v2.util.NBTExtKt;
+import g_mungus.vlib.v2.util.ServerLevelExtensionKt;
+import g_mungus.vlib.v2.util.ShipExtensionKt;
 import kotlin.Pair;
+import kotlin.Unit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -13,20 +16,23 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.block.TestHingeBlock;
 import org.valkyrienskies.mod.common.blockentity.TestHingeBlockEntity;
+import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
 @Mixin(value = TestHingeBlockEntity.class, remap = false)
 public abstract class MixinTestHingeBlockEntity extends BlockEntity implements HasSpecialSaveBehavior {
@@ -72,11 +78,32 @@ public abstract class MixinTestHingeBlockEntity extends BlockEntity implements H
                 BlockPos structurePos = hingePos.subtract(vlib$templateOffset);
                 ServerShip ship = VSGameUtilsKt.getShipManagingPos(serverLevel, hingePos);
 
-                if (ship != null) { ship.setStatic(true); } else { VLib.INSTANCE.getLOGGER().error("SHIP IS NULL");}
-                structureTemplate.placeInWorld(serverLevel, structurePos, structurePos, new StructurePlaceSettings(), serverLevel.random, 0);
+                if (ship != null) {
+                    ServerLevelExtensionKt.scheduleCallback(serverLevel, 3, () -> {
+                        structureTemplate.placeInWorld(serverLevel, structurePos, structurePos, new StructurePlaceSettings(), serverLevel.random, 0);
+                        Vector3dc positionInWorld = ship.getTransform().getPositionInWorld();
+                        Vector3dc targetPos = getTargetPos(serverLevel);
 
+                        Vector3dc cogInWorld = ship.getShipToWorld().transformPosition(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d());
+
+
+                        ShipExtensionKt.teleport(ship, serverLevel, targetPos.add(cogInWorld, new Vector3d()).add(0.5, 0.5, 0.5).sub(positionInWorld));
+                        return Unit.INSTANCE;
+                    });
+
+
+
+                } else { VLib.INSTANCE.getLOGGER().error("SHIP IS NULL");}
             });
         }
+    }
+
+    @Unique
+    Vector3dc getTargetPos(ServerLevel serverLevel) {
+        ServerShip ship = VSGameUtilsKt.getShipManagingPos(serverLevel, getBlockPos());
+        BlockPos blockPos = getBlockPos().offset(getBlockState().getValue(DirectionalBlock.FACING).getNormal());
+        Vector3d pos = VectorConversionsMCKt.toJOML(blockPos.getCenter());
+        return ship != null ? ship.getShipToWorld().transformPosition(pos, new Vector3d()) : pos;
     }
 
     @Override

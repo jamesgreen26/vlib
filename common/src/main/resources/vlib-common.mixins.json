@@ -14,7 +14,8 @@
     "shipPlacement.StructureTemplateManagerMixin",
     "shipPlacement.StructureTemplateMixin",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
-    "specialSaveBehavior.StructureTemplateMixin"
+    "specialSaveBehavior.StructureTemplateMixin",
+    "v2.ServerLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

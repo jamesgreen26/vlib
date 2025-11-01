@@ -1,7 +1,13 @@
 package g_mungus.vlib.v2.util
 
 import net.minecraft.core.BlockPos
+import net.minecraft.server.level.ServerLevel
+import org.joml.Quaterniond
+import org.joml.Vector3dc
+import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.mod.common.shipObjectWorld
 
 fun Ship.forEachBlock(callback: (BlockPos) -> Unit) {
     val aabb = shipAABB?: return
@@ -13,4 +19,8 @@ fun Ship.forEachBlock(callback: (BlockPos) -> Unit) {
             }
         }
     }
+}
+
+fun ServerShip.teleport(level: ServerLevel, newPos: Vector3dc) {
+    level.shipObjectWorld.teleportShip(this, ShipTeleportDataImpl(newPos = newPos, newRot = this.worldToShip.getNormalizedRotation(Quaterniond())))
 }
