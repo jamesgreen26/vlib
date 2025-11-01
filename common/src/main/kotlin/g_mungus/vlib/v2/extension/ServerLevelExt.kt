@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.util
+package g_mungus.vlib.v2.extension
 
 import g_mungus.vlib.v2.injected.HasCallbackQueue
 import net.minecraft.server.level.ServerLevel

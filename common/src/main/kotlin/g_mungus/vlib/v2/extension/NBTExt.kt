@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.util
+package g_mungus.vlib.v2.extension
 
 import net.minecraft.core.Vec3i
 import net.minecraft.nbt.CompoundTag

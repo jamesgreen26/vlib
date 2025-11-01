@@ -1,11 +1,11 @@
 package g_mungus.vlib.mixin.specialSaveBehavior;
 
 import g_mungus.vlib.VLib;
-import g_mungus.vlib.api.HasSpecialSaveBehavior;
+import g_mungus.vlib.v2.api.HasSpecialSaveBehavior;
 import g_mungus.vlib.api.VLibGameUtils;
-import g_mungus.vlib.v2.util.NBTExtKt;
-import g_mungus.vlib.v2.util.ServerLevelExtensionKt;
-import g_mungus.vlib.v2.util.ShipExtensionKt;
+import g_mungus.vlib.v2.extension.NBTExtKt;
+import g_mungus.vlib.v2.extension.ServerLevelExtKt;
+import g_mungus.vlib.v2.extension.ShipExtKt;
 import kotlin.Pair;
 import kotlin.Unit;
 import net.minecraft.core.BlockPos;
@@ -79,7 +79,7 @@ public abstract class MixinTestHingeBlockEntity extends BlockEntity implements H
                 ServerShip ship = VSGameUtilsKt.getShipManagingPos(serverLevel, hingePos);
 
                 if (ship != null) {
-                    ServerLevelExtensionKt.scheduleCallback(serverLevel, 3, () -> {
+                    ServerLevelExtKt.scheduleCallback(serverLevel, 3, () -> {
                         structureTemplate.placeInWorld(serverLevel, structurePos, structurePos, new StructurePlaceSettings(), serverLevel.random, 0);
                         Vector3dc positionInWorld = ship.getTransform().getPositionInWorld();
                         Vector3dc targetPos = getTargetPos(serverLevel);
@@ -87,7 +87,7 @@ public abstract class MixinTestHingeBlockEntity extends BlockEntity implements H
                         Vector3dc cogInWorld = ship.getShipToWorld().transformPosition(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d());
 
 
-                        ShipExtensionKt.teleport(ship, serverLevel, targetPos.add(cogInWorld, new Vector3d()).add(0.5, 0.5, 0.5).sub(positionInWorld));
+                        ShipExtKt.teleport(ship, serverLevel, targetPos.add(cogInWorld, new Vector3d()).add(0.5, 0.5, 0.5).sub(positionInWorld));
                         return Unit.INSTANCE;
                     });
 
