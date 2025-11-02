@@ -1,5 +1,6 @@
 package g_mungus.vlib.v2.api.extension
 
+import g_mungus.vlib.VLib
 import g_mungus.vlib.dimension.DimensionSettingsManager
 import g_mungus.vlib.v2.api.HasSpecialSaveBehavior
 import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet
@@ -18,13 +19,21 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 
-fun StructureTemplate.placeAsShip(level: ServerLevel, blockPos: BlockPos, static: Boolean = false): ServerShip {
+
+fun StructureTemplate.placeAsShip(level: ServerLevel, blockPos: BlockPos, static: Boolean = false): ServerShip? {
+    var pos = blockPos
+    val originalPos = blockPos
+
+    if (level.isOutsideBuildHeight(pos)) {
+        pos = BlockPos(pos.x, 0, pos.z)
+    }
+
     val dimensionSettings = DimensionSettingsManager.getSettingsForLevel(level.dimensionId)
 
-    val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, dimensionSettings.shipScale, level.dimensionId)
+    val ship = level.shipObjectWorld.createNewShipAtBlock(pos.toJOML(), false, dimensionSettings.shipScale, level.dimensionId)
     ship.isStatic = true
 
-    val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i()).toBlockPos().atY(blockPos.y)
+    val centreOfShip = ship.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i()).toBlockPos().atY(pos.y)
 
     val structurePlaceSettings = StructurePlaceSettings()
     structurePlaceSettings.rotationPivot = centreOfShip
@@ -38,12 +47,31 @@ fun StructureTemplate.placeAsShip(level: ServerLevel, blockPos: BlockPos, static
         2
     )
 
+    if (ship.inertiaData.mass < 0.001) {
+        level.shipObjectWorld.deleteShip(ship)
+        VLib.LOGGER.warn("Deleting ship with id: ${ship.id} because it has mass < 0.001")
+        return null
+    }
+
+    if (pos != originalPos) {
+        level.shipObjectWorld.teleportShip(
+            ship,
+            ShipTeleportDataImpl(
+                newPos = Vector3d(
+                    originalPos.x.toDouble(),
+                    originalPos.y.toDouble(),
+                    originalPos.z.toDouble()
+                )
+            )
+        )
+    }
+
     val newPos: Vector3d = ship.transform.positionInWorld.add(ship.inertiaData.centerOfMassInShip, Vector3d()).sub(centreOfShip.x.toDouble(), centreOfShip.y.toDouble(), centreOfShip.z.toDouble())
 
     level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = newPos))
 
-    ship.forEachBlock { pos ->
-        level.getBlockEntity(pos)?.let {
+    ship.forEachBlock { blockPos ->
+        level.getBlockEntity(blockPos)?.let {
             if (it is HasSpecialSaveBehavior) it.executeAfterLoadingShip()
         }
     }

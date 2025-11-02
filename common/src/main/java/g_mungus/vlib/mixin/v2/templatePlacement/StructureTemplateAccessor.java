@@ -1,4 +1,4 @@
-package g_mungus.vlib.mixin.v2.templateData;
+package g_mungus.vlib.mixin.v2.templatePlacement;
 
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.spongepowered.asm.mixin.Mixin;

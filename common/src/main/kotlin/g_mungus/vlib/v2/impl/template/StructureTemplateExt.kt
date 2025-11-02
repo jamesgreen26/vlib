@@ -1,7 +1,7 @@
 package g_mungus.vlib.v2.impl.template
 
 import g_mungus.vlib.VLib
-import g_mungus.vlib.mixin.v2.templateData.StructureTemplateAccessor
+import g_mungus.vlib.mixin.v2.templatePlacement.StructureTemplateAccessor
 import g_mungus.vlib.v2.util.serialization.toJson
 import g_mungus.vlib.v2.util.serialization.toTag
 import kotlinx.serialization.json.Json

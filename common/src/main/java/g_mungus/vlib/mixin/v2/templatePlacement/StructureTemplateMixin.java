@@ -1,4 +1,4 @@
-package g_mungus.vlib.mixin.v2.templateData;
+package g_mungus.vlib.mixin.v2.templatePlacement;
 
 import g_mungus.vlib.v2.impl.template.StructureTemplateExtKt;
 import net.minecraft.core.BlockPos;
@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.core.api.ships.Ship;
 
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
@@ -22,8 +23,8 @@ public class StructureTemplateMixin {
 
         StructureTemplate casted = (StructureTemplate) (Object) this;
         if (StructureTemplateExtKt.readAdditional(casted).isShip() && serverLevelAccessor instanceof ServerLevel serverLevel) {
-            g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(casted, serverLevel, blockPos, false);
-            cir.setReturnValue(true);
+            Ship ship = g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(casted, serverLevel, blockPos, false);
+            cir.setReturnValue(ship != null);
         }
     }
 

@@ -12,8 +12,9 @@
     "v2.blockMass.VoxelShapeAccessor",
     "v2.shipAssembly.PaletteInvoker",
     "v2.shipAssembly.StructureTemplateMixin",
-    "v2.templateData.StructureTemplateAccessor",
-    "v2.templateData.StructureTemplateMixin"
+    "v2.templatePlacement.BlockPosArgumentMixin",
+    "v2.templatePlacement.StructureTemplateAccessor",
+    "v2.templatePlacement.StructureTemplateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

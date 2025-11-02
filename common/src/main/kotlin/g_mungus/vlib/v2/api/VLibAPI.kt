@@ -39,7 +39,7 @@ object VLibAPI {
         val ship = StructureTemplate().let {
             it.fillFromVoxelSet(level, voxelSet)
             it.placeAsShip(level, voxelSet.min.toBlockPos(), true)
-        }
+        } ?: return null
 
         cleanupOriginalBlocks(level, voxelSet) {
             ship.isStatic = false
