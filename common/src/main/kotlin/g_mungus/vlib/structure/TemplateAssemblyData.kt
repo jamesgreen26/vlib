@@ -3,8 +3,8 @@ package g_mungus.vlib.structure
 import g_mungus.vlib.VLib
 import g_mungus.vlib.v2.api.HasSpecialSaveBehavior
 import g_mungus.vlib.data.StructureSettings
-import g_mungus.vlib.v2.extension.forEachBlock
-import g_mungus.vlib.v2.extension.scheduleCallback
+import g_mungus.vlib.v2.api.extension.forEachBlock
+import g_mungus.vlib.v2.api.extension.scheduleCallback
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel

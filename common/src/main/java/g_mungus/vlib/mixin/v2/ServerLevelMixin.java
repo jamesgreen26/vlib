@@ -1,6 +1,6 @@
 package g_mungus.vlib.mixin.v2;
 
-import g_mungus.vlib.v2.injected.HasCallbackQueue;
+import g_mungus.vlib.v2.util.injected.HasCallbackQueue;
 import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;

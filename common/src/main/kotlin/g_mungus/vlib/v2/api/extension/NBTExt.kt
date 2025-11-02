@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.extension
+package g_mungus.vlib.v2.api.extension
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i

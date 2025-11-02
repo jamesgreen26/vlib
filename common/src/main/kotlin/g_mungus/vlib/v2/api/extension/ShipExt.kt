@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.extension
+package g_mungus.vlib.v2.api.extension
 
 import g_mungus.vlib.v2.util.NamedStructureTemplate
 import net.minecraft.core.BlockPos
