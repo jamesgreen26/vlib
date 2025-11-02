@@ -1,7 +1,7 @@
 package g_mungus.vlib.v2.util
 
-import g_mungus.vlib.mixin.massCalculator.BitsetDiscreteVoxelShapeAccessor
-import g_mungus.vlib.util.CanAccessShape
+import g_mungus.vlib.mixin.v2.blockMass.BitsetDiscreteVoxelShapeAccessor
+import g_mungus.vlib.mixin.v2.blockMass.VoxelShapeAccessor
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.EmptyBlockGetter
 import net.minecraft.world.level.block.state.BlockState
@@ -20,7 +20,7 @@ fun calculateBlockMass(blockState: BlockState): Double {
         CollisionContext.empty()
     )
 
-    val shape = (voxelShape as CanAccessShape).`vlib$getShape`()
+    val shape = (voxelShape as VoxelShapeAccessor).shape
     var volume = 0.0
 
     BitsetDiscreteVoxelShapeAccessor.forAllBoxes(

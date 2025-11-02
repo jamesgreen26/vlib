@@ -3,9 +3,10 @@
   "package": "g_mungus.vlib.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "v2.blockMass.VoxelShapeAccessor",
     "bugfix.EntityShipCollisionUtilsMixin",
-    "massCalculator.BitsetDiscreteVoxelShapeAccessor",
-    "massCalculator.VoxelShapeAccessor",
+    "v2.blockMass.BitsetDiscreteVoxelShapeAccessor",
+    "v2.blockMass.VoxelShapeAccessor",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin",
     "v2.ServerLevelMixin",

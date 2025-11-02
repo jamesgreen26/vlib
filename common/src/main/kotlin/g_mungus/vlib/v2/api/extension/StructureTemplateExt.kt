@@ -42,10 +42,10 @@ fun StructureTemplate.placeAsShip(level: ServerLevel, blockPos: BlockPos, static
 
     level.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = newPos))
 
-    ship.forEachBlock {
-        val blockEntity = level.getBlockEntity(it)
-
-        if (blockEntity is HasSpecialSaveBehavior) blockEntity.executeAfterLoadingShip()
+    ship.forEachBlock { pos ->
+        level.getBlockEntity(pos)?.let {
+            if (it is HasSpecialSaveBehavior) it.executeAfterLoadingShip()
+        }
     }
 
     ship.isStatic = static

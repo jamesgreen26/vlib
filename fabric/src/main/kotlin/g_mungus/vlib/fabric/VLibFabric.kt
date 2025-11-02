@@ -3,7 +3,6 @@ package g_mungus.vlib.fabric
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
-import g_mungus.vlib.VLibCommands
 import g_mungus.vlib.block.GhostPlatformBlock
 import g_mungus.vlib.data.onResourceReload
 import g_mungus.vlib.item.AssemblyStickItem
@@ -11,7 +10,6 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
@@ -48,10 +46,6 @@ object VLibFabric: ModInitializer {
                 onResourceReload(resourceManager)
             }
         })
-
-        CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
-            VLibCommands.register(dispatcher)
-        }
 
         init()
     }

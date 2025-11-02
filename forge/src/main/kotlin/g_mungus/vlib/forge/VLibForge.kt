@@ -6,7 +6,6 @@ import net.minecraftforge.event.AddReloadListenerEvent
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
-import g_mungus.vlib.VLibCommands
 import g_mungus.vlib.block.GhostPlatformBlock
 import g_mungus.vlib.data.onResourceReload
 import g_mungus.vlib.item.AssemblyStickItem
@@ -16,7 +15,6 @@ import net.minecraft.world.item.CreativeModeTabs
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent
-import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
@@ -59,10 +57,6 @@ class VLibForge {
                     onResourceReload(resourceManager)
                 }
             })
-        }
-
-        FORGE_BUS.addListener { event: RegisterCommandsEvent ->
-            VLibCommands.register(event.dispatcher)
         }
 
         init()

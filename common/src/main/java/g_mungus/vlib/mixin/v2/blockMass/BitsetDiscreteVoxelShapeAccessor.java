@@ -1,4 +1,4 @@
-package g_mungus.vlib.mixin.massCalculator;
+package g_mungus.vlib.mixin.v2.blockMass;
 
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
