@@ -1,6 +1,8 @@
 package g_mungus.vlib.v2.api.extension
 
 import g_mungus.vlib.v2.impl.template.NamedStructureTemplate
+import g_mungus.vlib.v2.impl.template.VLibStructureData
+import g_mungus.vlib.v2.impl.template.saveAdditional
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceLocation
@@ -36,6 +38,8 @@ fun ServerShip.getTemplate(name: ResourceLocation, level: ServerLevel) =
     level.structureManager.getOrCreate(name).let {
         it.fillFromWorld(level, getTemplateCorner(), getTemplateSize(), false, Blocks.AIR)
         NamedStructureTemplate(it, name)
+    }.also {
+        it.template.saveAdditional(VLibStructureData(isShip = true))
     }
 
 fun ServerShip.saveToTemplate(name: ResourceLocation, level: ServerLevel) =

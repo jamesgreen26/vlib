@@ -1,5 +1,7 @@
 package g_mungus.vlib.v2.serialization
 
+import g_mungus.vlib.v2.util.serialization.toJson
+import g_mungus.vlib.v2.util.serialization.toTag
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

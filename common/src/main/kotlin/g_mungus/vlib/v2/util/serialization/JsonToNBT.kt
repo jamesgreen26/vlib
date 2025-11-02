@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.serialization
+package g_mungus.vlib.v2.util.serialization
 
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -15,6 +15,7 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 import net.minecraft.nbt.*
+import kotlin.collections.iterator
 
 fun JsonElement.toTag(): Tag = when (this) {
     is JsonObject -> CompoundTag().apply {
