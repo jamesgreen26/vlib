@@ -2,6 +2,7 @@ package g_mungus.vlib.api
 
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.LOGGER
+import g_mungus.vlib.v2.api.VLibAPI
 import g_mungus.vlib.v2.api.extension.fillFromVoxelSet
 import g_mungus.vlib.v2.api.extension.placeAsShip
 import g_mungus.vlib.v2.api.extension.scheduleCallback
@@ -18,7 +19,8 @@ import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.mod.common.*
-import org.valkyrienskies.mod.common.util.toBlockPos
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import kotlin.random.Random
 
 @Deprecated("move to VLib api v2")
@@ -33,40 +35,15 @@ object VLibGameUtils {
     fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) =
         assembleByConnectivity(level, blockPos, listOf())
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block> = listOf()): ServerShip? {
-        if (level.isBlockInShipyard(blockPos)) return null
-
-        val voxelSet = BoundedVoxelSet.tryFillByConnectivity(level, blockPos, blackList)?: return null
-
-        val ship = StructureTemplate().let {
-            it.fillFromVoxelSet(level, voxelSet)
-            it.placeAsShip(level, voxelSet.min.toBlockPos(), true)
-        }
-
-        cleanupOriginalBlocks(level, voxelSet) {
-            ship.isStatic = false
-        }
-
-        return ship
-    }
-
-    private fun cleanupOriginalBlocks(level: ServerLevel, voxelSet: BoundedVoxelSet, whenComplete: () -> Unit) {
-        voxelSet.voxels.forEach { pos ->
-            val be = level.getBlockEntity(pos)
-            if (be != null) {
-                level.removeBlockEntity(pos)
-            }
-            level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
-        }
-
-        level.scheduleCallback(4) {
-            voxelSet.voxels.forEach { pos ->
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
-            }
-
-            whenComplete.invoke()
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block>): CompletionStage<Ship> {
+        val ship = VLibAPI.assembleByConnectivity(level, blockPos, blackList)
+        return if (ship != null) {
+            CompletableFuture.completedFuture(ship)
+        } else {
+            CompletableFuture.failedFuture(Exception("assembly failed"))
         }
     }
+
 
     /**
      * Saves the ship found at the given BlockPos to a structure template, optionally deleting the ship after.
