@@ -14,7 +14,7 @@ data class BoundedVoxelSet(val voxels: Set<BlockPos>, val min: Vector3ic, val ma
 
     companion object {
 
-        fun tryFill(level: Level, start: BlockPos, blackList: List<Block>): BoundedVoxelSet? {
+        fun tryFillByConnectivity(level: Level, start: BlockPos, blackList: List<Block>): BoundedVoxelSet? {
             val combinedBlackList = mutableListOf<Block>().apply {
                 addAll(defaultBlackList)
                 addAll(blackList)

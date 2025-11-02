@@ -2,33 +2,23 @@ package g_mungus.vlib.api
 
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.LOGGER
-import g_mungus.vlib.VLib.MOD_ID
-import g_mungus.vlib.structure.StructureManager
+import g_mungus.vlib.v2.api.extension.fillFromVoxelSet
+import g_mungus.vlib.v2.api.extension.placeAsShip
 import g_mungus.vlib.v2.api.extension.scheduleCallback
 import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet
-import g_mungus.vlib.v2.util.injected.CanFillFromVoxelSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.util.RandomSource
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
-import net.minecraft.world.phys.AABB
 import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.mod.common.*
 import org.valkyrienskies.mod.common.util.toBlockPos
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionStage
 import kotlin.random.Random
 
 @Deprecated("move to VLib api v2")
@@ -43,44 +33,39 @@ object VLibGameUtils {
     fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) =
         assembleByConnectivity(level, blockPos, listOf())
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block>): CompletionStage<Ship>? {
-        if (level.isBlockInShipyard(blockPos)) return CompletableFuture.failedFuture(IllegalArgumentException("Ship is already assembled"))
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block> = listOf()): ServerShip? {
+        if (level.isBlockInShipyard(blockPos)) return null
 
-        val future = CompletableFuture<Ship>()
-        val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
-        val template = level.structureManager.getOrCreate(id)
+        val voxelSet = BoundedVoxelSet.tryFillByConnectivity(level, blockPos, blackList)?: return null
 
-        val voxelSet = BoundedVoxelSet.tryFill(level, blockPos, blackList)?: return null
-
-        (template as CanFillFromVoxelSet).`vlib$fillFromVoxelSet`(level, voxelSet)
-
-        template.author = StructureManager.READY + "%" + id
-        template.placeInWorld(
-            level,
-            voxelSet.min.toBlockPos(),
-            voxelSet.min.toBlockPos(),
-            StructurePlaceSettings(),
-            RandomSource.create(),
-            2
-        )
-
-        level.scheduleCallback(0) {
-            voxelSet.voxels.forEach { pos ->
-                val be = level.getBlockEntity(pos)
-                if (be != null) {
-                    level.removeBlockEntity(pos)
-                }
-                level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
-            }
+        val ship = StructureTemplate().let {
+            it.fillFromVoxelSet(level, voxelSet)
+            it.placeAsShip(level, voxelSet.min.toBlockPos(), true)
         }
 
-        level.scheduleCallback(1) {
+        cleanupOriginalBlocks(level, voxelSet) {
+            ship.isStatic = false
+        }
+
+        return ship
+    }
+
+    private fun cleanupOriginalBlocks(level: ServerLevel, voxelSet: BoundedVoxelSet, whenComplete: () -> Unit) {
+        voxelSet.voxels.forEach { pos ->
+            val be = level.getBlockEntity(pos)
+            if (be != null) {
+                level.removeBlockEntity(pos)
+            }
+            level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
+        }
+
+        level.scheduleCallback(4) {
             voxelSet.voxels.forEach { pos ->
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
             }
-        }
 
-        return future
+            whenComplete.invoke()
+        }
     }
 
     /**
