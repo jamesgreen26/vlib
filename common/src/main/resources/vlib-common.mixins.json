@@ -3,7 +3,6 @@
   "package": "g_mungus.vlib.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "v2.templateData.StructureTemplateAccessor",
     "bugfix.EntityShipCollisionUtilsMixin",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin",
@@ -12,7 +11,9 @@
     "v2.blockMass.DefaultBlockStateInfoProviderMixin",
     "v2.blockMass.VoxelShapeAccessor",
     "v2.shipAssembly.PaletteInvoker",
-    "v2.shipAssembly.StructureTemplateMixin"
+    "v2.shipAssembly.StructureTemplateMixin",
+    "v2.templateData.StructureTemplateAccessor",
+    "v2.templateData.StructureTemplateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
