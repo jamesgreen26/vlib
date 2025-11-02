@@ -8,11 +8,6 @@
     "massCalculator.VoxelShapeAccessor",
     "v2.shipAssembly.PaletteInvoker",
     "v2.shipAssembly.StructureTemplateMixin",
-    "shipPlacement.BlockPosArgumentMixin",
-    "shipPlacement.MinecraftServerMixin",
-    "shipPlacement.StructureStartMixin",
-    "shipPlacement.StructureTemplateManagerMixin",
-    "shipPlacement.StructureTemplateMixin",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin",
     "v2.ServerLevelMixin"

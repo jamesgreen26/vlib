@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.util
+package g_mungus.vlib.v2.impl.template
 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate

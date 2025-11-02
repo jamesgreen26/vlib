@@ -2,11 +2,10 @@ package g_mungus.vlib.mixin.specialSaveBehavior;
 
 import g_mungus.vlib.VLib;
 import g_mungus.vlib.v2.api.HasSpecialSaveBehavior;
-import g_mungus.vlib.api.VLibGameUtils;
+import g_mungus.vlib.v2.api.VLibAPI;
 import g_mungus.vlib.v2.api.extension.NBTExtKt;
 import g_mungus.vlib.v2.api.extension.ServerLevelExtKt;
 import g_mungus.vlib.v2.api.extension.ShipExtKt;
-import kotlin.Pair;
 import kotlin.Unit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -34,6 +33,8 @@ import org.valkyrienskies.mod.common.block.TestHingeBlock;
 import org.valkyrienskies.mod.common.blockentity.TestHingeBlockEntity;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
+import java.util.Objects;
+
 @Mixin(value = TestHingeBlockEntity.class, remap = false)
 public abstract class MixinTestHingeBlockEntity extends BlockEntity implements HasSpecialSaveBehavior {
 
@@ -57,10 +58,16 @@ public abstract class MixinTestHingeBlockEntity extends BlockEntity implements H
     public void executeWhenSavingShip(long parentShipId) {
         BlockPos hingePos = getOtherHingePos();
         if (getLevel() instanceof ServerLevel serverLevel && hingePos != null) {
-            Pair<ResourceLocation, BlockPos> res = VLibGameUtils.INSTANCE.saveShipToTemplate2(VLib.MOD_ID, serverLevel, hingePos, false, true);
-            if (res != null) {
-                vlib$constraintTemplate = res.getFirst();
-                vlib$templateOffset = hingePos.subtract(res.getSecond());
+            ServerShip ship = VSGameUtilsKt.getShipManagingPos(serverLevel, getOtherHingePos());
+            if (ship != null) {
+                ResourceLocation location = new ResourceLocation(VLib.MOD_ID, Objects.requireNonNull(ship.getSlug()));
+                BlockPos corner = ShipExtKt.getTemplateCorner(ship);
+
+                VLibAPI.saveShipToTemplate(ship, location, serverLevel);
+                VLibAPI.discardShip(ship, serverLevel);
+
+                vlib$constraintTemplate = location;
+                vlib$templateOffset = hingePos.subtract(corner);
             }
         }
     }

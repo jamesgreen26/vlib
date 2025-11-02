@@ -1,6 +1,6 @@
 package g_mungus.vlib.v2.api.extension
 
-import g_mungus.vlib.v2.util.NamedStructureTemplate
+import g_mungus.vlib.v2.impl.template.NamedStructureTemplate
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.resources.ResourceLocation
