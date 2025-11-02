@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "bugfix.EntityShipCollisionUtilsMixin",
+    "shipPlacement.StructureTemplateManagerMixin",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin",
     "v2.ServerLevelMixin",
