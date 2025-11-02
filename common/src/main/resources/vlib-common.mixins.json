@@ -6,11 +6,12 @@
     "bugfix.EntityShipCollisionUtilsMixin",
     "massCalculator.BitsetDiscreteVoxelShapeAccessor",
     "massCalculator.VoxelShapeAccessor",
-    "v2.shipAssembly.PaletteInvoker",
-    "v2.shipAssembly.StructureTemplateMixin",
     "specialSaveBehavior.MixinTestHingeBlockEntity",
     "specialSaveBehavior.StructureTemplateMixin",
-    "v2.ServerLevelMixin"
+    "v2.ServerLevelMixin",
+    "v2.blockMass.DefaultBlockStateInfoProviderMixin",
+    "v2.shipAssembly.PaletteInvoker",
+    "v2.shipAssembly.StructureTemplateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.phys.shapes.CollisionContext
 import org.valkyrienskies.mod.common.config.MassDatapackResolver
 import java.io.File
