@@ -23,7 +23,7 @@ public class StructureTemplateMixin {
         StructureTemplate casted = (StructureTemplate) (Object) this;
         if (StructureTemplateExtKt.readAdditional(casted).isShip() && serverLevelAccessor instanceof ServerLevel serverLevel) {
             g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(casted, serverLevel, blockPos, false);
-            cir.cancel();
+            cir.setReturnValue(true);
         }
     }
 
