@@ -4,7 +4,9 @@ import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.LOGGER
 import g_mungus.vlib.VLib.MOD_ID
 import g_mungus.vlib.structure.StructureManager
-import g_mungus.vlib.util.CanFillByConnectivity
+import g_mungus.vlib.v2.api.extension.scheduleCallback
+import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet
+import g_mungus.vlib.v2.util.injected.CanFillFromVoxelSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,11 +26,12 @@ import org.joml.primitives.AABBic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.mod.common.*
+import org.valkyrienskies.mod.common.util.toBlockPos
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import kotlin.random.Random
 
-
+@Deprecated("move to VLib api v2")
 object VLibGameUtils {
 
     /**
@@ -37,50 +40,46 @@ object VLibGameUtils {
      * @return A completion stage which completes with the created ship when assembly is finished, or null if the blockPos specified was in the shipyard already.
      **/
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos): CompletionStage<Ship> =
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos) =
         assembleByConnectivity(level, blockPos, listOf())
 
-    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block>): CompletionStage<Ship> {
+    fun assembleByConnectivity(level: ServerLevel, blockPos: BlockPos, blackList: List<Block>): CompletionStage<Ship>? {
         if (level.isBlockInShipyard(blockPos)) return CompletableFuture.failedFuture(IllegalArgumentException("Ship is already assembled"))
 
         val future = CompletableFuture<Ship>()
         val id = ResourceLocation(MOD_ID, "ships/" + Random.nextInt().toString())
         val template = level.structureManager.getOrCreate(id)
 
-        (template as CanFillByConnectivity).`vlib$fillByConnectivity`(level, blockPos, blackList).whenComplete { t, u ->
-            t?.let {
-                if (StructureManager.blacklist.keys().toList().contains(t.second)) {
-                    future.completeExceptionally(IllegalStateException("Position is on assembly cooldown"))
-                    return@whenComplete
-                }
-                template.author = StructureManager.READY + "%" + id
-                template.placeInWorld(level, t.second, t.second, StructurePlaceSettings(), RandomSource.create(), 2)
-                it.first.forEach { pos ->
-                    val be = level.getBlockEntity(pos)
-                    if (be != null) {
-                        level.removeBlockEntity(pos)
-                    }
+        val voxelSet = BoundedVoxelSet.tryFill(level, blockPos, blackList)?: return null
 
-                    level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
-                }
-                CoroutineScope(Dispatchers.Default).launch {
-                    var ship: Ship? = null
-                    while (ship == null) {
-                        delay(100)
-                        ship = level.getShipsIntersecting(AABB(blockPos)).toList().firstOrNull()
-                    }
-                    delay(200)
+        (template as CanFillFromVoxelSet).`vlib$fillFromVoxelSet`(level, voxelSet)
 
-                    it.first.forEach { pos ->
-                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
-                    }
+        template.author = StructureManager.READY + "%" + id
+        template.placeInWorld(
+            level,
+            voxelSet.min.toBlockPos(),
+            voxelSet.min.toBlockPos(),
+            StructurePlaceSettings(),
+            RandomSource.create(),
+            2
+        )
 
-                    (ship as ServerShip).isStatic = false
-                    future.complete(ship)
+        level.scheduleCallback(0) {
+            voxelSet.voxels.forEach { pos ->
+                val be = level.getBlockEntity(pos)
+                if (be != null) {
+                    level.removeBlockEntity(pos)
                 }
+                level.setBlock(pos, VLib.GHOST_BLOCK.defaultBlockState(), 0)
             }
-            u?.printStackTrace()
         }
+
+        level.scheduleCallback(1) {
+            voxelSet.voxels.forEach { pos ->
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS)
+            }
+        }
+
         return future
     }
 
