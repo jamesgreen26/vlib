@@ -11,13 +11,19 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
+
+    @Unique
+    private static final ConcurrentHashMap<BlockPos, Boolean> vlib$blacklist = new ConcurrentHashMap<>();
 
     @Inject(method = "placeInWorld", at = @At("HEAD"), cancellable = true)
     void redirectToShipPlacement(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, BlockPos blockPos2, StructurePlaceSettings structurePlaceSettings, RandomSource randomSource, int i, CallbackInfoReturnable<Boolean> cir) {
@@ -31,9 +37,11 @@ public class StructureTemplateMixin {
                 if (serverLevelAccessor instanceof ServerLevel) {
                     g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(template, serverLevel, blockPos, false);
                     cir.setReturnValue(true);
-                } else {
+                } else if (vlib$blacklist.putIfAbsent(blockPos, Boolean.TRUE) == null) {
+                    // world gen is messy, only allow one structure per block pos
+
                     // create ship on the main server thread to avoid issues with world gen
-                    ((HasCallbackQueue) serverLevel).vlib$enqueue(5, () -> {
+                    ((HasCallbackQueue) serverLevel).vlib$enqueue(0, () -> {
                         g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(template, serverLevel, blockPos, false);
                         return Unit.INSTANCE;
                     });
