@@ -28,7 +28,7 @@ public abstract class StructureTemplateMixin {
         Ship ship = VSGameUtilsKt.getShipObjectManagingPos(level, pos);
 
         if (ship != null && blockEntity instanceof HasSpecialSaveBehavior it) {
-            it.executeWhenSavingShip(ship.getId());
+            it.executeWhenSavingShip();
         }
 
         return blockEntity;

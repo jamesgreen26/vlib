@@ -2,8 +2,8 @@ package g_mungus.vlib.mixin.shipPlacement;
 
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.structure.StructureManager;
-import g_mungus.vlib.v2.impl.template.StructureTemplateExtKt;
-import g_mungus.vlib.v2.impl.template.VLibStructureData;
+import g_mungus.vlib.v2.internal.template.StructureTemplateExtKt;
+import g_mungus.vlib.v2.internal.template.VLibStructureData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;

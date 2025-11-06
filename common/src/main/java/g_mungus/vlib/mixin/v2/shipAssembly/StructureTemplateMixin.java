@@ -1,8 +1,8 @@
 package g_mungus.vlib.mixin.v2.shipAssembly;
 
 import com.google.common.collect.Lists;
-import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet;
-import g_mungus.vlib.v2.util.injected.CanFillFromVoxelSet;
+import g_mungus.vlib.v2.internal.assembly.BoundedVoxelSet;
+import g_mungus.vlib.v2.internal.injected.CanFillFromVoxelSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;

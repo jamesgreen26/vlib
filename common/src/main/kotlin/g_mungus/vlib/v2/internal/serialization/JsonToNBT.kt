@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.util.serialization
+package g_mungus.vlib.v2.internal.serialization
 
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement

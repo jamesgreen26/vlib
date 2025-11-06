@@ -55,7 +55,7 @@ public abstract class MixinTestHingeBlockEntity extends BlockEntity implements H
     private final String vlib$templateKey = "vlib$templateLocation", vlib$offsetKey = "vlib$structure_offset";
 
     @Override
-    public void executeWhenSavingShip(long parentShipId) {
+    public void executeWhenSavingShip() {
         BlockPos hingePos = getOtherHingePos();
         if (getLevel() instanceof ServerLevel serverLevel && hingePos != null) {
             ServerShip ship = VSGameUtilsKt.getShipManagingPos(serverLevel, getOtherHingePos());

@@ -1,7 +1,7 @@
 package g_mungus.vlib.mixin.v2.templatePlacement;
 
-import g_mungus.vlib.v2.impl.template.StructureTemplateExtKt;
-import g_mungus.vlib.v2.util.injected.HasCallbackQueue;
+import g_mungus.vlib.v2.internal.template.StructureTemplateExtKt;
+import g_mungus.vlib.v2.internal.injected.HasCallbackQueue;
 import kotlin.Unit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

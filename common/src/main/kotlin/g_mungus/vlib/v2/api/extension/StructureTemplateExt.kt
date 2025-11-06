@@ -3,8 +3,8 @@ package g_mungus.vlib.v2.api.extension
 import g_mungus.vlib.VLib
 import g_mungus.vlib.dimension.DimensionSettingsManager
 import g_mungus.vlib.v2.api.HasSpecialSaveBehavior
-import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet
-import g_mungus.vlib.v2.util.injected.CanFillFromVoxelSet
+import g_mungus.vlib.v2.internal.assembly.BoundedVoxelSet
+import g_mungus.vlib.v2.internal.injected.CanFillFromVoxelSet
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings

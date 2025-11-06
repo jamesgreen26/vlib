@@ -1,4 +1,4 @@
-package g_mungus.vlib.block
+package g_mungus.vlib.v2.internal.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.BlockGetter
@@ -17,10 +17,12 @@ class GhostPlatformBlock : Block(
         .noOcclusion()
 ) {
 
+    @Deprecated("Deprecated in Java")
     override fun getRenderShape(state: BlockState): RenderShape {
         return RenderShape.INVISIBLE
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getCollisionShape(
         state: BlockState,
         world: BlockGetter,
@@ -30,6 +32,7 @@ class GhostPlatformBlock : Block(
         return Shapes.empty()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getShape(
         state: BlockState,
         world: BlockGetter,
@@ -39,15 +42,19 @@ class GhostPlatformBlock : Block(
         return Shapes.empty()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getInteractionShape(state: BlockState, level: BlockGetter, pos: BlockPos): VoxelShape {
         return Shapes.empty()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getBlockSupportShape(state: BlockState, reader: BlockGetter, pos: BlockPos): VoxelShape {
         return Shapes.block()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun useShapeForLightOcclusion(state: BlockState): Boolean = true
 
+    @Deprecated("Deprecated in Java")
     override fun isCollisionShapeFullBlock(state: BlockState, level: BlockGetter, pos: BlockPos): Boolean = true
 }

@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.impl.assembly
+package g_mungus.vlib.v2.internal.assembly
 
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.MAX_RECURSION

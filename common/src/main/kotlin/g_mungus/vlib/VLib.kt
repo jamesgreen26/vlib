@@ -30,5 +30,6 @@ object VLib {
     fun initClient() { }
 
     @JvmStatic
+    @Deprecated("Will be removed, do not use this")
     val isDuringWorldGen get() = Thread.currentThread() != ValkyrienSkiesMod.currentServer?.runningThread
 }

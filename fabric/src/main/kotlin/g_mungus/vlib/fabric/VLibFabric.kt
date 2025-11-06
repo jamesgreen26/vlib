@@ -3,7 +3,7 @@ package g_mungus.vlib.fabric
 import g_mungus.vlib.VLib
 import g_mungus.vlib.VLib.init
 import g_mungus.vlib.VLib.initClient
-import g_mungus.vlib.block.GhostPlatformBlock
+import g_mungus.vlib.v2.internal.block.GhostPlatformBlock
 import g_mungus.vlib.data.onResourceReload
 import g_mungus.vlib.item.AssemblyStickItem
 import net.fabricmc.api.ClientModInitializer

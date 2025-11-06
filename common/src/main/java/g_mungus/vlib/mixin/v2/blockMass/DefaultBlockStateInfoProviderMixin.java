@@ -1,6 +1,6 @@
 package g_mungus.vlib.mixin.v2.blockMass;
 
-import g_mungus.vlib.v2.util.CalculateBlockMassKt;
+import g_mungus.vlib.v2.internal.CalculateBlockMassKt;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

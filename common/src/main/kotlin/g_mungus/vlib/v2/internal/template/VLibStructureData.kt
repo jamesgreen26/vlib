@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.impl.template
+package g_mungus.vlib.v2.internal.template
 
 import kotlinx.serialization.Serializable
 

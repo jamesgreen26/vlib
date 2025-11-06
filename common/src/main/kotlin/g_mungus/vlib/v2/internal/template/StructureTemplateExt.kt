@@ -1,9 +1,9 @@
-package g_mungus.vlib.v2.impl.template
+package g_mungus.vlib.v2.internal.template
 
 import g_mungus.vlib.VLib
 import g_mungus.vlib.mixin.v2.templatePlacement.StructureTemplateAccessor
-import g_mungus.vlib.v2.util.serialization.toJson
-import g_mungus.vlib.v2.util.serialization.toTag
+import g_mungus.vlib.v2.internal.serialization.toJson
+import g_mungus.vlib.v2.internal.serialization.toTag
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement

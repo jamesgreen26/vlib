@@ -1,4 +1,4 @@
-package g_mungus.vlib.v2.util
+package g_mungus.vlib.v2.internal
 
 import g_mungus.vlib.mixin.v2.blockMass.BitsetDiscreteVoxelShapeAccessor
 import g_mungus.vlib.mixin.v2.blockMass.VoxelShapeAccessor

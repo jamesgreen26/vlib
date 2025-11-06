@@ -7,7 +7,7 @@ import g_mungus.vlib.v2.api.extension.placeAsShip
 import g_mungus.vlib.v2.api.extension.saveToTemplate
 import g_mungus.vlib.v2.api.extension.scheduleCallback
 import g_mungus.vlib.v2.api.extension.teleport
-import g_mungus.vlib.v2.impl.assembly.BoundedVoxelSet
+import g_mungus.vlib.v2.internal.assembly.BoundedVoxelSet
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
