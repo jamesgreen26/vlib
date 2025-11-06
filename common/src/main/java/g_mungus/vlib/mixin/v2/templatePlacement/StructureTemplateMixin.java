@@ -36,7 +36,6 @@ public class StructureTemplateMixin {
 
                 if (serverLevelAccessor instanceof ServerLevel) {
                     g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(template, serverLevel, blockPos, false);
-                    cir.setReturnValue(true);
                 } else if (vlib$blacklist.putIfAbsent(blockPos, Boolean.TRUE) == null) {
                     // world gen is messy, only allow one structure per block pos
 
@@ -45,8 +44,8 @@ public class StructureTemplateMixin {
                         g_mungus.vlib.v2.api.extension.StructureTemplateExtKt.placeAsShip(template, serverLevel, blockPos, false);
                         return Unit.INSTANCE;
                     });
-                    cir.setReturnValue(true);
                 }
+                cir.setReturnValue(true);
             }
         }
     }
