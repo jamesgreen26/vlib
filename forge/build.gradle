@@ -95,7 +95,8 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
             dependsOn shadowJar
-    archiveClassifier.set "forge"
+    archiveClassifier.set null
+    archiveFileName.set("${rootProject.archives_base_name}-${project.version}+forge.jar")
 }
 
 jar {

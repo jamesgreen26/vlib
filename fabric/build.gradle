@@ -65,7 +65,8 @@ remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
             dependsOn shadowJar
-    archiveClassifier.set "fabric"
+    archiveClassifier.set null
+    archiveFileName.set("${rootProject.archives_base_name}-${project.version}+fabric.jar")
 }
 
 jar {
