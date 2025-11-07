@@ -13,11 +13,14 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.Vec3
 
 fun StructureTemplate.saveAdditional(data: VLibStructureData) {
-    (this as StructureTemplateAccessor).entityInfoList.add(StructureTemplate.StructureEntityInfo(
-        Vec3(0.0, 0.0, 0.0),
-        BlockPos(0,0,0),
-        CompoundTag().apply {put(VLib.MOD_ID, Json.encodeToJsonElement(data).toTag())}
-    ))
+    (this as StructureTemplateAccessor).entityInfoList.apply {
+        removeIf { it.nbt.contains(VLib.MOD_ID) }
+        add(StructureTemplate.StructureEntityInfo(
+            Vec3(0.0, 0.0, 0.0),
+            BlockPos(0,0,0),
+            CompoundTag().apply {put(VLib.MOD_ID, Json.encodeToJsonElement(data).toTag())}
+        ))
+    }
 }
 
 fun StructureTemplate.readAdditional(): VLibStructureData {
