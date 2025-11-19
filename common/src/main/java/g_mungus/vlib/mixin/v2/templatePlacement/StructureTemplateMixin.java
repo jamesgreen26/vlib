@@ -1,6 +1,6 @@
 package g_mungus.vlib.mixin.v2.templatePlacement;
 
-import g_mungus.vlib.v2.internal.template.StructureTemplateExtKt;
+import g_mungus.vlib.v2.internal.template.StructureTemplateInternalExtKt;
 import g_mungus.vlib.v2.internal.injected.HasCallbackQueue;
 import kotlin.Unit;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ public class StructureTemplateMixin {
     void redirectToShipPlacement(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, BlockPos blockPos2, StructurePlaceSettings structurePlaceSettings, RandomSource randomSource, int i, CallbackInfoReturnable<Boolean> cir) {
         StructureTemplate template = (StructureTemplate) (Object) this;
 
-        if (StructureTemplateExtKt.readAdditional(template).isShip() && serverLevelAccessor instanceof WorldGenLevel) {
+        if (StructureTemplateInternalExtKt.readAdditional(template).isShip() && serverLevelAccessor instanceof WorldGenLevel) {
             ServerLevel serverLevel = serverLevelAccessor.getLevel();
 
             if (!VSGameUtilsKt.isBlockInShipyard(serverLevel, blockPos)) {

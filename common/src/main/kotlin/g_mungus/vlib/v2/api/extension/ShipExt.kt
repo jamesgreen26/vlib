@@ -1,6 +1,6 @@
 package g_mungus.vlib.v2.api.extension
 
-import g_mungus.vlib.v2.internal.template.NamedStructureTemplate
+import g_mungus.vlib.v2.api.model.NamedStructureTemplate
 import g_mungus.vlib.v2.internal.template.VLibStructureData
 import g_mungus.vlib.v2.internal.template.saveAdditional
 import net.minecraft.core.BlockPos

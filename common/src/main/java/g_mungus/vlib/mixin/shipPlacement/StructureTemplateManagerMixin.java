@@ -2,7 +2,7 @@ package g_mungus.vlib.mixin.shipPlacement;
 
 import g_mungus.vlib.data.StructureSettings;
 import g_mungus.vlib.structure.StructureManager;
-import g_mungus.vlib.v2.internal.template.StructureTemplateExtKt;
+import g_mungus.vlib.v2.internal.template.StructureTemplateInternalExtKt;
 import g_mungus.vlib.v2.internal.template.VLibStructureData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -44,7 +44,7 @@ public abstract class StructureTemplateManagerMixin {
             }
 
             if (shouldAssemble) {
-                StructureTemplateExtKt.saveAdditional(template.get(), new VLibStructureData(true));
+                StructureTemplateInternalExtKt.saveAdditional(template.get(), new VLibStructureData(true));
             }
         }
         cir.setReturnValue(template);

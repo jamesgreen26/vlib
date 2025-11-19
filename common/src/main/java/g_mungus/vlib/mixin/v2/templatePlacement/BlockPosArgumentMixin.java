@@ -2,7 +2,7 @@ package g_mungus.vlib.mixin.v2.templatePlacement;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import g_mungus.vlib.v2.internal.template.StructureTemplateExtKt;
+import g_mungus.vlib.v2.internal.template.StructureTemplateInternalExtKt;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -36,7 +36,7 @@ public class BlockPosArgumentMixin {
             ResourceLocation id = ResourceLocationArgument.getId(commandContext, "template");
 
             serverLevel.getStructureManager().get(id).ifPresent((template) -> {
-                shouldBypassHeightCheck.set(StructureTemplateExtKt.readAdditional(template).isShip());
+                shouldBypassHeightCheck.set(StructureTemplateInternalExtKt.readAdditional(template).isShip());
             });
 
         } catch (Exception e) {
