@@ -25,6 +25,9 @@ object VLibAPI {
     fun saveShipToTemplate(ship: ServerShip, resourceLocation: ResourceLocation, level: ServerLevel) = ship.saveToTemplate(resourceLocation, level)
 
     @JvmStatic
+    fun placeTemplateAsShip(template: StructureTemplate, level: ServerLevel, pos: BlockPos, static: Boolean) = template.placeAsShip(level, pos, static)
+
+    @JvmStatic
     fun discardShip(ship: ServerShip, level: ServerLevel) = ship.discard(level)
 
     @JvmStatic
