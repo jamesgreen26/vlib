@@ -1,6 +1,6 @@
 package g_mungus.vlib.mixin.specialSaveBehavior;
 
-import g_mungus.vlib.v2.api.HasSpecialSaveBehavior;
+import g_mungus.vlib.v2.api.experimental.HasSpecialSaveBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;

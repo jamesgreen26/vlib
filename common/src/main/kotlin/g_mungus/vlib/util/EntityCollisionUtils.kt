@@ -11,9 +11,9 @@ import org.joml.Quaterniondc
 import org.joml.Vector3d
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
-import org.valkyrienskies.core.apigame.collision.ConvexPolygonc
-import org.valkyrienskies.core.apigame.collision.EntityPolygonCollider
-import org.valkyrienskies.core.impl.collision.k.createPolygonFromAABB
+import org.valkyrienskies.core.impl.shadow.Dk.createPolygonFromAABB
+import org.valkyrienskies.core.internal.collision.VsiConvexPolygonc
+import org.valkyrienskies.core.internal.collision.VsiEntityPolygonCollider
 import org.valkyrienskies.core.util.extend
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.IEntityDraggingInformationProvider
@@ -30,7 +30,7 @@ fun adjustEntityMovementForShipCollisions(
     movement: Vec3,
     entityBoundingBox: AABB,
     world: Level,
-    collider: EntityPolygonCollider
+    collider: VsiEntityPolygonCollider
 ): Vec3 {
     // Inflate the bounding box more for players than other entities, to give players a better collision result.
     // Note that this increases the cost of doing collision, so we only do it for the players
@@ -88,10 +88,10 @@ fun getShipPolygonsCollidingWithEntity(
     movement: Vec3,
     entityBoundingBox: AABB,
     world: Level,
-    collider: EntityPolygonCollider
-): List<ConvexPolygonc> {
+    collider: VsiEntityPolygonCollider
+): List<VsiConvexPolygonc> {
     val entityBoxWithMovement = entityBoundingBox.expandTowards(movement)
-    val collidingPolygons: MutableList<ConvexPolygonc> = ArrayList()
+    val collidingPolygons: MutableList<VsiConvexPolygonc> = ArrayList()
     val entityBoundingBoxExtended = entityBoundingBox.toJOML().extend(movement.toJOML())
 
     val dimSettings = DimensionSettingsManager.getSettingsForLevel(world.dimension().location())
@@ -99,7 +99,7 @@ fun getShipPolygonsCollidingWithEntity(
 
     for (shipObject in world.shipObjectWorld.loadedShips.getIntersecting(entityBoundingBoxExtended)) {
         val shipTransform = shipObject.transform
-        val entityPolyInShipCoordinates: ConvexPolygonc = collider.createPolygonFromAABB(
+        val entityPolyInShipCoordinates: VsiConvexPolygonc = collider.createPolygonFromAABB(
             entityBoxWithMovement.toJOML(),
             shipTransform.worldToShip
         )
@@ -122,7 +122,7 @@ fun getShipPolygonsCollidingWithEntity(
         }
 
         if (entity is Player) entityBoundingBoxInShipCoordinates = shrinkAABBXZ(entityBoundingBoxInShipCoordinates, shipTransform.shipToWorldRotation)
-        if (BugFixUtil.isCollisionBoxToBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
+        if (BugFixUtil.isCollisionBoxTooBig(entityBoundingBoxInShipCoordinates.toMinecraft())) {
             // Box too large, skip it
             continue
         }
@@ -130,7 +130,7 @@ fun getShipPolygonsCollidingWithEntity(
             world.getBlockCollisions(entity, entityBoundingBoxInShipCoordinates.toMinecraft())
         shipBlockCollisionStream.forEach { voxelShape: VoxelShape ->
             voxelShape.forAllBoxes { minX, minY, minZ, maxX, maxY, maxZ ->
-                val shipPolygon: ConvexPolygonc = createPolygonFromAABB(
+                val shipPolygon: VsiConvexPolygonc = createPolygonFromAABB(
                     AABBd(minX, minY, minZ, maxX, maxY, maxZ),
                     shipTransform.shipToWorld,
                     shipObject.id

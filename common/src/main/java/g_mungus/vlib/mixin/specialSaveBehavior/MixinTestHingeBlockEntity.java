@@ -1,8 +1,8 @@
 package g_mungus.vlib.mixin.specialSaveBehavior;
 
 import g_mungus.vlib.VLib;
-import g_mungus.vlib.v2.api.HasSpecialSaveBehavior;
 import g_mungus.vlib.v2.api.VLibAPI;
+import g_mungus.vlib.v2.api.experimental.HasSpecialSaveBehavior;
 import g_mungus.vlib.v2.api.extension.NBTExtKt;
 import g_mungus.vlib.v2.api.extension.ServerLevelExtKt;
 import g_mungus.vlib.v2.api.extension.ShipExtKt;

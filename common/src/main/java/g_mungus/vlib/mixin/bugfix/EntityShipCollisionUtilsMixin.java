@@ -12,8 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.core.apigame.collision.ConvexPolygonc;
-import org.valkyrienskies.core.apigame.collision.EntityPolygonCollider;
+import org.valkyrienskies.core.internal.collision.VsiEntityPolygonCollider;
 import org.valkyrienskies.mod.common.util.EntityShipCollisionUtils;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class EntityShipCollisionUtilsMixin {
 
     @Final
     @Shadow(remap = false)
-    private static EntityPolygonCollider collider;
+    private static VsiEntityPolygonCollider collider;
 
 
     @Inject(method = "adjustEntityMovementForShipCollisions", at = @At("HEAD"), cancellable = true, remap = false)

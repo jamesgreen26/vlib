@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.mod.common.vsCore
 
 
 object VLib {
@@ -21,6 +22,9 @@ object VLib {
     fun init() {
         LOGGER.info("VLib init")
 
+        vsCore.registerAttachment(GravityAttachment::class.java) {
+            useLegacySerializer()
+        }
         VSEvents.shipLoadEvent.on { event ->
             GravityAttachment.getOrCreate(ship = event.ship)
         }
